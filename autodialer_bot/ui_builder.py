@@ -1,0 +1,283 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+
+class UIBuilder:
+    """Build clean Telegram UI components"""
+    
+    @staticmethod
+    def main_menu():
+        """Main menu keyboard"""
+        keyboard = [
+            [
+                InlineKeyboardButton("📞 New Campaign", callback_data="new_campaign"),
+                InlineKeyboardButton("📊 My Campaigns", callback_data="my_campaigns")
+            ],
+            [
+                InlineKeyboardButton("🖥️ VPS Servers", callback_data="vps_servers"),
+                InlineKeyboardButton("📈 Statistics", callback_data="statistics")
+            ],
+            [
+                InlineKeyboardButton("⚙️ Settings", callback_data="settings"),
+                InlineKeyboardButton("❓ Help", callback_data="help")
+            ]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def campaign_list_menu(campaigns):
+        """Campaign list with action buttons"""
+        keyboard = []
+        
+        for campaign in campaigns[:10]:  # Show last 10
+            status_emoji = {
+                'pending': '⏸️',
+                'running': '▶️',
+                'paused': '⏸️',
+                'completed': '✅',
+                'stopped': '⏹️'
+            }.get(campaign.status, '❔')
+            
+            keyboard.append([
+                InlineKeyboardButton(
+                    f"{status_emoji} {campaign.name}",
+                    callback_data=f"campaign_{campaign.id}"
+                )
+            ])
+        
+        keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def campaign_control_menu(campaign):
+        """Campaign control buttons"""
+        keyboard = []
+        
+        if campaign.status in ['pending', 'stopped']:
+            keyboard.append([
+                InlineKeyboardButton("▶️ Start Campaign", callback_data=f"start_{campaign.id}")
+            ])
+        elif campaign.status == 'running':
+            keyboard.append([
+                InlineKeyboardButton("⏸️ Pause", callback_data=f"pause_{campaign.id}"),
+                InlineKeyboardButton("⏹️ Stop", callback_data=f"stop_{campaign.id}")
+            ])
+        elif campaign.status == 'paused':
+            keyboard.append([
+                InlineKeyboardButton("▶️ Resume", callback_data=f"resume_{campaign.id}"),
+                InlineKeyboardButton("⏹️ Stop", callback_data=f"stop_{campaign.id}")
+            ])
+        
+        keyboard.extend([
+            [
+                InlineKeyboardButton("📊 View Stats", callback_data=f"stats_{campaign.id}"),
+                InlineKeyboardButton("📋 View Logs", callback_data=f"logs_{campaign.id}")
+            ],
+            [
+                InlineKeyboardButton("🗑️ Delete", callback_data=f"delete_{campaign.id}"),
+                InlineKeyboardButton("🔙 Back", callback_data="my_campaigns")
+            ]
+        ])
+        
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def vps_list_menu(servers):
+        """VPS server list"""
+        keyboard = []
+        
+        for server in servers:
+            status_emoji = {
+                'pending': '⏳',
+                'installing': '🔧',
+                'ready': '✅',
+                'error': '❌'
+            }.get(server.status, '❔')
+            
+            keyboard.append([
+                InlineKeyboardButton(
+                    f"{status_emoji} {server.name or server.host}",
+                    callback_data=f"vps_{server.id}"
+                )
+            ])
+        
+        keyboard.append([
+            InlineKeyboardButton("➕ Add New Server", callback_data="add_vps"),
+            InlineKeyboardButton("🔙 Back", callback_data="main_menu")
+        ])
+        
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def vps_control_menu(server):
+        """VPS server control buttons"""
+        keyboard = [
+            [
+                InlineKeyboardButton("🔄 Test Connection", callback_data=f"test_vps_{server.id}"),
+                InlineKeyboardButton("📊 Status", callback_data=f"vps_status_{server.id}")
+            ],
+            [
+                InlineKeyboardButton("⚙️ Configure", callback_data=f"config_vps_{server.id}"),
+                InlineKeyboardButton("🗑️ Delete", callback_data=f"delete_vps_{server.id}")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back", callback_data="vps_servers")
+            ]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def confirm_menu(action, item_id):
+        """Confirmation dialog"""
+        keyboard = [
+            [
+                InlineKeyboardButton("✅ Yes, Confirm", callback_data=f"confirm_{action}_{item_id}"),
+                InlineKeyboardButton("❌ Cancel", callback_data=f"cancel_{action}")
+            ]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def settings_menu():
+        """Settings menu"""
+        keyboard = [
+            [
+                InlineKeyboardButton("� SIP Accounts", callback_data="settings_sip"),
+                InlineKeyboardButton("🛒 Buy SIP", callback_data="settings_buy_sip")
+            ],
+            [
+                InlineKeyboardButton("�🔔 Notifications", callback_data="settings_notifications"),
+                InlineKeyboardButton("🔐 License", callback_data="settings_license")
+            ],
+            [
+                InlineKeyboardButton("👤 Profile", callback_data="settings_profile"),
+                InlineKeyboardButton("📱 Telegram Settings", callback_data="settings_telegram")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")
+            ]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def cancel_button():
+        """Cancel button"""
+        keyboard = [[InlineKeyboardButton("❌ Cancel", callback_data="cancel")]]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def format_campaign_info(campaign, stats=None):
+        """Format campaign information message"""
+        status_emoji = {
+            'pending': '⏸️',
+            'running': '▶️',
+            'paused': '⏸️',
+            'completed': '✅',
+            'stopped': '⏹️'
+        }.get(campaign.status, '❔')
+        
+        # Use tts_transfer field from database model
+        tts_msg = campaign.tts_transfer or campaign.tts_callback or "N/A"
+        message = f"""
+📞 **Campaign: {campaign.name}**
+{status_emoji} Status: {campaign.status.upper()}
+
+📝 **Configuration:**
+• TTS Message: {tts_msg[:50]}{'...' if len(tts_msg) > 50 else ''}
+• Transfer Number: {campaign.transfer_number or 'N/A'}
+• Max Concurrent: {campaign.max_concurrent}
+• Total Numbers: {campaign.total_numbers}
+• Created: {campaign.created_at.strftime('%Y-%m-%d %H:%M')}
+"""
+        
+        if stats:
+            attempted = stats.get('attempted', 0)
+            total = stats.get('total', 0)
+            progress_pct = (attempted / total * 100) if total > 0 else 0
+            message += f"""
+📊 **Statistics:**
+• Total Numbers: {total}
+• Dialed: {attempted} ({progress_pct:.0f}%)
+• Active: {stats.get('active', 0)}
+• Pending: {stats.get('pending', 0)}
+• No Answer: {stats.get('no_answer', 0)}
+• Failed: {stats.get('failed', 0)}
+• Pressed 1: {stats.get('callbacks', 0)}
+• Success Rate: {stats.get('success_rate', 0):.1f}%
+"""
+        
+        if campaign.started_at:
+            message += f"• Started: {campaign.started_at.strftime('%Y-%m-%d %H:%M')}\n"
+        
+        if campaign.completed_at:
+            message += f"• Completed: {campaign.completed_at.strftime('%Y-%m-%d %H:%M')}\n"
+        
+        return message.strip()
+    
+    @staticmethod
+    def format_vps_info(server, status_info=None):
+        """Format VPS information message"""
+        status_emoji = {
+            'pending': '⏳',
+            'installing': '🔧',
+            'ready': '✅',
+            'error': '❌'
+        }.get(server.status, '❔')
+        
+        message = f"""
+🖥️ **VPS Server: {server.name or 'Unnamed'}**
+{status_emoji} Status: {server.status.upper()}
+
+🔧 **Connection Details:**
+• Host: {server.host}
+• SSH Port: {server.ssh_port}
+• SSH User: {server.ssh_username}
+• AMI Port: {server.ami_port}
+• AMI User: {server.ami_username}
+"""
+        
+        if status_info:
+            message += f"""
+📊 **Asterisk Status:**
+• Running: {'Yes ✅' if status_info.get('running') else 'No ❌'}
+• Version: {status_info.get('version', 'Unknown')}
+• Active Channels: {status_info.get('active_channels', 0)}
+"""
+        
+        message += f"\n• Added: {server.created_at.strftime('%Y-%m-%d %H:%M')}"
+        
+        return message.strip()
+    
+    @staticmethod
+    def format_statistics(user_stats):
+        """Format user statistics message"""
+        message = f"""
+📈 **Your Statistics**
+
+📞 **Campaigns:**
+• Total Created: {user_stats.get('total_campaigns', 0)}
+• Currently Active: {user_stats.get('active_campaigns', 0)}
+• Completed: {user_stats.get('completed_campaigns', 0)}
+
+📊 **Calls:**
+• Total Calls Made: {user_stats.get('total_calls', 0)}
+• Successful: {user_stats.get('successful_calls', 0)}
+• Failed: {user_stats.get('failed_calls', 0)}
+• Transfers: {user_stats.get('transfers', 0)}
+• Callbacks: {user_stats.get('callbacks', 0)}
+
+💰 **License:**
+• Max Campaigns: {user_stats.get('max_campaigns', 0)}
+• Valid Until: {user_stats.get('license_valid_until', 'N/A')}
+"""
+        return message.strip()
+    
+    @staticmethod
+    def progress_bar(current, total, width=20):
+        """Generate progress bar"""
+        if total == 0:
+            return "░" * width
+        
+        filled = int(width * current / total)
+        bar = "█" * filled + "░" * (width - filled)
+        percentage = (current / total * 100)
+        
+        return f"{bar} {percentage:.1f}%"

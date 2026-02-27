@@ -1,0 +1,197 @@
+phone_number,status,duration_sec,timestamp,notes
+14388156539,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+15146006391,pressed_1,0,2026-02-27 09:59:35,
+14388765920,no_answer,0,2026-02-27 09:59:35,Expired: no AMI event received (possible silent SIP rejection)
+16136885777,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+16478975695,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+19024413442,no_answer,0,2026-02-27 09:59:35,Expired: no AMI event received (possible silent SIP rejection)
+14165531444,no_answer,0,2026-02-27 09:59:35,Expired: no AMI event received (possible silent SIP rejection)
+15148264206,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+14169925879,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+18197018446,no_answer,0,2026-02-27 09:59:35,Expired: no AMI event received (possible silent SIP rejection)
+17789531174,hangup,0,2026-02-27 09:59:35,Cause 16: Normal call clearing
+14165656763,no_answer,0,2026-02-27 09:59:35,Expired: no AMI event received (possible silent SIP rejection)
+15143867209,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+16043630376,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+16048081000,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+12899260087,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+17785491846,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+17788662591,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+15145733946,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+14038368218,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+15748989028,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+16472610131,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+14184731092,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+15142145687,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+14038266662,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+17782331148,hangup,0,2026-02-27 09:59:36,Cause 16: Normal call clearing
+16138135505,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+19059620448,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+16475397171,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+16479611278,no_answer,0,2026-02-27 09:59:36,Expired: no AMI event received (possible silent SIP rejection)
+19059412423,hangup,0,2026-02-27 10:00:12,Cause 16: Normal call clearing
+19027197271,no_answer,0,2026-02-27 10:00:37,Expired: no AMI event received (possible silent SIP rejection)
+15146219801,no_answer,0,2026-02-27 10:00:37,Expired: no AMI event received (possible silent SIP rejection)
+16477808588,hangup,0,2026-02-27 10:00:38,Cause 16: Normal call clearing
+19022106515,no_answer,0,2026-02-27 10:00:39,Expired: no AMI event received (possible silent SIP rejection)
+16476396139,no_answer,0,2026-02-27 10:00:39,Expired: no AMI event received (possible silent SIP rejection)
+12899254973,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+12893143322,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16132437401,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16043183939,hangup,0,2026-02-27 10:00:41,Cause 16: Normal call clearing
+17788869884,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+17782374836,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16474732760,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16044143785,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+13068312336,hangup,0,2026-02-27 10:00:41,Cause 16: Normal call clearing
+15147787917,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16474030262,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+12265071599,no_answer,0,2026-02-27 10:00:41,Expired: no AMI event received (possible silent SIP rejection)
+16048399213,hangup,0,2026-02-27 10:00:41,Cause 16: Normal call clearing
+14033542126,hangup,0,2026-02-27 10:00:42,Cause 16: Normal call clearing
+14167974105,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+14155043465,hangup,0,2026-02-27 10:00:42,Cause 16: Normal call clearing
+18196844563,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+16047222928,hangup,0,2026-02-27 10:00:42,Cause 16: Normal call clearing
+16477165989,hangup,0,2026-02-27 10:00:42,Cause 16: Normal call clearing
+12503073760,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+14166172053,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+14504212662,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+13062910905,hangup,0,2026-02-27 10:00:42,Cause 16: Normal call clearing
+14187324008,no_answer,0,2026-02-27 10:00:42,Expired: no AMI event received (possible silent SIP rejection)
+12049010943,calling,0,2026-02-27 10:01:15,
+17809723811,calling,0,2026-02-27 10:01:40,
+15142616226,calling,0,2026-02-27 10:01:40,
+16044466497,calling,0,2026-02-27 10:01:40,
+16046172121,calling,0,2026-02-27 10:01:40,
+14508071522,calling,0,2026-02-27 10:01:40,
+13062274331,calling,0,2026-02-27 10:01:40,
+12508829821,calling,0,2026-02-27 10:01:43,
+16473236366,calling,0,2026-02-27 10:01:43,
+12047613386,calling,0,2026-02-27 10:01:45,
+17808126545,calling,0,2026-02-27 10:01:46,
+14385805261,answered,0,2026-02-27 10:01:46,
+19055633924,calling,0,2026-02-27 10:01:46,
+14389937449,calling,0,2026-02-27 10:01:46,
+15149833171,calling,0,2026-02-27 10:01:46,
+14036600660,calling,0,2026-02-27 10:01:46,
+12502082885,calling,0,2026-02-27 10:01:46,
+18077085733,calling,0,2026-02-27 10:01:46,
+14033933601,calling,0,2026-02-27 10:01:46,
+12897956253,calling,0,2026-02-27 10:01:46,
+19059037597,calling,0,2026-02-27 10:01:46,
+14507757132,calling,0,2026-02-27 10:01:46,
+16043161853,answered,0,2026-02-27 10:01:46,
+16133225156,calling,0,2026-02-27 10:01:46,
+15873176996,calling,0,2026-02-27 10:01:46,
+12895524456,calling,0,2026-02-27 10:01:46,
+16046525331,calling,0,2026-02-27 10:01:46,
+16475193084,calling,0,2026-02-27 10:01:46,
+15197778621,calling,0,2026-02-27 10:01:46,
+15145892554,calling,0,2026-02-27 10:01:46,
+15192176845,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+18193193702,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+14039730933,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+14169097030,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+16135526573,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+16477877392,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+12506864070,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+12269194044,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+16479623151,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+14037402439,hangup,0,2026-02-27 10:03:34,Cause 16: Normal call clearing
+17789868667,no_answer,0,2026-02-27 10:03:34,Expired: no AMI event received (possible silent SIP rejection)
+15149002086,hangup,0,2026-02-27 10:03:34,Cause 16: Normal call clearing
+16479931524,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+12508843280,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+14182625729,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+16049667044,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+17789978959,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+14503307096,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+14038016752,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+17097824330,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16179100386,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+12042928662,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+12046487411,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16047260288,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16047662521,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+16046122226,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+18193422791,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16132615633,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16479950101,no_answer,0,2026-02-27 10:03:35,Expired: no AMI event received (possible silent SIP rejection)
+16047794053,hangup,0,2026-02-27 10:03:35,Cause 16: Normal call clearing
+16472944001,no_answer,0,2026-02-27 10:04:38,Expired: no AMI event received (possible silent SIP rejection)
+16478338805,no_answer,0,2026-02-27 10:04:38,Expired: no AMI event received (possible silent SIP rejection)
+16046557159,no_answer,0,2026-02-27 10:04:38,Expired: no AMI event received (possible silent SIP rejection)
+12508260798,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+14035619443,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+14388777222,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+15145501156,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+15149960967,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+15147771047,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+13062137137,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+12262310780,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+16478814399,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+17788094509,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+17786570864,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+16043685188,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+14503745957,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+17788867251,hangup,0,2026-02-27 10:04:40,Cause 16: Normal call clearing
+19056275954,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+12267919822,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+12508707349,no_answer,0,2026-02-27 10:04:40,Expired: no AMI event received (possible silent SIP rejection)
+16046147953,hangup,0,2026-02-27 10:04:41,Cause 16: Normal call clearing
+16473936927,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+14168979350,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+14182265794,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+13065907583,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+14038740439,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+17789031553,hangup,0,2026-02-27 10:04:41,Cause 16: Normal call clearing
+18199792819,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+17806060015,hangup,0,2026-02-27 10:04:41,Cause 16: Normal call clearing
+18076302775,no_answer,0,2026-02-27 10:04:41,Expired: no AMI event received (possible silent SIP rejection)
+14383995674,no_answer,0,2026-02-27 10:05:05,Expired: no AMI event received (possible silent SIP rejection)
+14164769205,no_answer,0,2026-02-27 10:05:25,Expired: no AMI event received (possible silent SIP rejection)
+13062605154,no_answer,0,2026-02-27 10:05:39,Expired: no AMI event received (possible silent SIP rejection)
+15193329085,no_answer,0,2026-02-27 10:05:39,Expired: no AMI event received (possible silent SIP rejection)
+15197740273,no_answer,0,2026-02-27 10:05:39,Expired: no AMI event received (possible silent SIP rejection)
+15198783627,no_answer,0,2026-02-27 10:05:39,Expired: no AMI event received (possible silent SIP rejection)
+14382741700,no_answer,0,2026-02-27 10:05:44,Expired: no AMI event received (possible silent SIP rejection)
+14388231516,no_answer,0,2026-02-27 10:05:44,Expired: no AMI event received (possible silent SIP rejection)
+16472813096,no_answer,0,2026-02-27 10:05:44,Expired: no AMI event received (possible silent SIP rejection)
+16478896874,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16043469643,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+12047704219,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+15193014656,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16478843750,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+17052201833,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+17782464833,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16473006055,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+14169938347,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+18199234430,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+19024018036,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+13066308750,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16132660431,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+14167235425,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16136172792,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+17782881045,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16138509663,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+15149535532,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+15148934031,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16043583806,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+14168259811,no_answer,0,2026-02-27 10:05:45,Expired: no AMI event received (possible silent SIP rejection)
+16132619297,calling,0,2026-02-27 10:06:10,
+14168763006,calling,0,2026-02-27 10:06:30,
+14167027976,calling,0,2026-02-27 10:06:30,
+19055102941,calling,0,2026-02-27 10:06:45,
+17788469589,calling,0,2026-02-27 10:06:45,
+16132889235,calling,0,2026-02-27 10:06:45,
+17803816927,calling,0,2026-02-27 10:06:50,
+13479889832,calling,0,2026-02-27 10:06:50,
+16479666024,calling,0,2026-02-27 10:06:50,
+15195045138,calling,0,2026-02-27 10:06:50,
+13062491869,calling,0,2026-02-27 10:06:50,
+17788656133,calling,0,2026-02-27 10:06:50,
+14035807025,calling,0,2026-02-27 10:06:50,
+15145863580,calling,0,2026-02-27 10:06:50,
+17788846858,calling,0,2026-02-27 10:06:50,
+15198783000,calling,0,2026-02-27 10:06:50,

