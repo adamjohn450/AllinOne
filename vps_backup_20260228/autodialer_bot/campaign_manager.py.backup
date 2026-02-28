@@ -1,0 +1,445 @@
+import asyncio
+import logging
+from typing import Dict, Optional, Callable
+from datetime import datetime
+from asterisk.ami import AMIClient, SimpleAction
+from gtts import gTTS
+import os
+import threading
+import time
+from queue import Queue
+
+logger = logging.getLogger(__name__)
+
+class CampaignManager:
+    """Manage campaign execution and call processing"""
+    
+    def __init__(self, db_session):
+        self.db = db_session
+        self.active_campaigns = {}  # campaign_id: CampaignRunner
+        self.telegram_callback = None
+    
+    def set_telegram_callback(self, callback: Callable):
+        """Set callback for sending Telegram messages"""
+        self.telegram_callback = callback
+    
+    async def start_campaign(self, campaign_id: int, vps_config: Dict) -> bool:
+        """Start a campaign"""
+        try:
+            from database import Campaign, PhoneNumber
+            
+            campaign = self.db.query(Campaign).filter_by(id=campaign_id).first()
+            if not campaign:
+                return False
+            
+            # Get phone numbers
+            phone_numbers = self.db.query(PhoneNumber).filter_by(
+                campaign_id=campaign_id,
+                status='pending'
+            ).all()
+            
+            if not phone_numbers:
+                logger.warning(f"No pending numbers for campaign {campaign_id}")
+                return False
+            
+            # TTS audio is already generated during campaign creation
+            
+            # Create campaign runner
+            runner = CampaignRunner(
+                campaign=campaign,
+                phone_numbers=phone_numbers,
+                vps_config=vps_config,
+                db_session=self.db,
+                telegram_callback=self.telegram_callback
+            )
+            
+            # Start runner in background
+            self.active_campaigns[campaign_id] = runner
+            threading.Thread(target=runner.run, daemon=True).start()
+            
+            # Update status
+            campaign.status = 'running'
+            campaign.started_at = datetime.utcnow()
+            self.db.commit()
+            
+            logger.info(f"Campaign {campaign_id} started")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to start campaign {campaign_id}: {e}")
+            return False
+    
+    async def pause_campaign(self, campaign_id: int) -> bool:
+        """Pause a campaign"""
+        try:
+            runner = self.active_campaigns.get(campaign_id)
+            if runner:
+                runner.pause()
+            
+            from database import Campaign
+            campaign = self.db.query(Campaign).filter_by(id=campaign_id).first()
+            if campaign:
+                campaign.status = 'paused'
+                self.db.commit()
+            
+            return True
+        except Exception as e:
+            logger.error(f"Failed to pause campaign {campaign_id}: {e}")
+            return False
+    
+    async def resume_campaign(self, campaign_id: int) -> bool:
+        """Resume a paused campaign"""
+        try:
+            runner = self.active_campaigns.get(campaign_id)
+            if runner:
+                runner.resume()
+            
+            from database import Campaign
+            campaign = self.db.query(Campaign).filter_by(id=campaign_id).first()
+            if campaign:
+                campaign.status = 'running'
+                self.db.commit()
+            
+            return True
+        except Exception as e:
+            logger.error(f"Failed to resume campaign {campaign_id}: {e}")
+            return False
+    
+    async def stop_campaign(self, campaign_id: int) -> bool:
+        """Stop a campaign"""
+        try:
+            runner = self.active_campaigns.get(campaign_id)
+            if runner:
+                runner.stop()
+                del self.active_campaigns[campaign_id]
+            
+            from database import Campaign
+            campaign = self.db.query(Campaign).filter_by(id=campaign_id).first()
+            if campaign:
+                campaign.status = 'stopped'
+                campaign.completed_at = datetime.utcnow()
+                self.db.commit()
+            
+            return True
+        except Exception as e:
+            logger.error(f"Failed to stop campaign {campaign_id}: {e}")
+            return False
+    
+    async def get_campaign_stats(self, campaign_id: int) -> Dict:
+        """Get campaign statistics"""
+        try:
+            from database import Campaign, PhoneNumber, CallLog
+            
+            campaign = self.db.query(Campaign).filter_by(id=campaign_id).first()
+            if not campaign:
+                return {}
+            
+            total = self.db.query(PhoneNumber).filter_by(campaign_id=campaign_id).count()
+            completed = self.db.query(PhoneNumber).filter_by(campaign_id=campaign_id, status='completed').count()
+            failed = self.db.query(PhoneNumber).filter_by(campaign_id=campaign_id, status='failed').count()
+            pending = self.db.query(PhoneNumber).filter_by(campaign_id=campaign_id, status='pending').count()
+            
+            # Get active count from runner
+            active = 0
+            runner = self.active_campaigns.get(campaign_id)
+            if runner:
+                active = len(runner.active_calls)
+            
+            # Call logs
+            transfers = self.db.query(CallLog).filter_by(campaign_id=campaign_id, status='transferred').count()
+            callbacks = self.db.query(CallLog).filter_by(campaign_id=campaign_id, status='callback').count()
+            
+            success_rate = (completed / total * 100) if total > 0 else 0
+            
+            return {
+                'total': total,
+                'completed': completed,
+                'failed': failed,
+                'pending': pending,
+                'active': active,
+                'transfers': transfers,
+                'callbacks': callbacks,
+                'success_rate': success_rate
+            }
+        except Exception as e:
+            logger.error(f"Failed to get stats for campaign {campaign_id}: {e}")
+            return {}
+    
+    async def _generate_tts(self, campaign):
+        """Generate TTS audio for campaign"""
+        try:
+            audio_dir = 'audio'
+            os.makedirs(audio_dir, exist_ok=True)
+            
+            filename = f"{audio_dir}/campaign_{campaign.id}_tts.mp3"
+            
+            tts = gTTS(text=campaign.tts_message, lang='en', slow=False)
+            tts.save(filename)
+            
+            logger.info(f"TTS generated for campaign {campaign.id}")
+            return filename
+        except Exception as e:
+            logger.error(f"TTS generation failed: {e}")
+            return None
+
+
+class CampaignRunner:
+    """Run a campaign in background"""
+    
+    def __init__(self, campaign, phone_numbers, vps_config, db_session, telegram_callback):
+        self.campaign = campaign
+        self.phone_numbers = phone_numbers
+        self.vps_config = vps_config
+        self.db = None  # Each thread will create its own session
+        self.telegram_callback = telegram_callback
+        
+        self.running = True
+        self.paused = False
+        self.active_calls = {}
+        self.phone_queue = Queue()
+        
+        # Add all phone numbers to queue
+        for phone in phone_numbers:
+            self.phone_queue.put(phone)
+        
+        # Asterisk connection
+        self.ami_client = None
+    
+    def run(self):
+        """Main campaign loop"""
+        try:
+            # Connect to Asterisk
+            self.ami_client = AMIClient(
+                address=self.vps_config['host'],
+                port=self.vps_config['ami_port']
+            )
+            self.ami_client.login(
+                username=self.vps_config['ami_username'],
+                secret=self.vps_config['ami_password']
+            )
+            
+            logger.info(f"Campaign {self.campaign.id} connected to Asterisk")
+            
+            # Start worker threads
+            workers = []
+            for i in range(min(self.campaign.max_concurrent, 5)):
+                t = threading.Thread(target=self._worker, daemon=True)
+                t.start()
+                workers.append(t)
+            
+            # Wait for completion
+            while self.running:
+                if self.phone_queue.empty() and len(self.active_calls) == 0:
+                    # Campaign complete
+                    self._on_complete()
+                    break
+                time.sleep(1)
+            
+            # Cleanup
+            if self.ami_client:
+                self.ami_client.logoff()
+                
+        except Exception as e:
+            logger.error(f"Campaign {self.campaign.id} error: {e}")
+            self._on_error(str(e))
+    
+    def _worker(self):
+        """Worker thread to process calls"""
+        from database import SessionLocal
+        # Create thread-local database session
+        db = SessionLocal()
+        
+        try:
+            while self.running:
+                if self.paused:
+                    time.sleep(1)
+                    continue
+                
+                # Check concurrent limit
+                if len(self.active_calls) >= self.campaign.max_concurrent:
+                    time.sleep(1)
+                    continue
+                
+                # Get next phone number
+                if not self.phone_queue.empty():
+                    phone = self.phone_queue.get()
+                    self._make_call(phone, db)
+                else:
+                    time.sleep(1)
+        finally:
+            db.close()
+    
+    def _make_call(self, phone, db):
+        """Make a call to a phone number"""
+        try:
+            from database import CallLog, VPSServer, PhoneNumber
+            # Re-query phone from this db session to avoid detached instance issues
+            phone = db.query(PhoneNumber).filter_by(id=phone.id).first()
+            if not phone:
+                logger.error(f"Phone not found in database")
+                return
+            
+            call_id = f"{phone.phone_number}_{int(time.time())}"
+            self.active_calls[call_id] = {
+                'phone': phone.phone_number,
+                'start_time': time.time(),
+                'status': 'calling'
+            }
+            
+            # Get VPS server info for SIP trunk name
+            server = db.query(VPSServer).filter_by(id=self.campaign.server_id).first()
+            trunk_name = f"trunk_{server.id}" if server else "default"
+            
+            # Format phone number - keep the number as-is, just remove special characters
+            phone_number = phone.phone_number.replace('+', '').replace('-', '').replace(' ', '')
+            # Don't strip the leading 1 - SIP trunk needs it for North American numbers
+            
+            logger.info(f"Dialing phone: {phone_number}, trunk: {trunk_name}")
+            
+            # Set caller ID
+            caller_id_name = server.caller_id_name if server and server.caller_id_name else "AutoDialer"
+            caller_id_num = server.caller_id_number if server and server.caller_id_number else phone_number
+            
+            # Originate call via Asterisk using campaign context
+            channel_str = f'PJSIP/{phone_number}@{trunk_name}'
+            logger.info(f"AMI Channel parameter: {channel_str}")
+            
+            action = SimpleAction(
+                'Originate',
+                Channel=channel_str,
+                Context=f'campaign-{self.campaign.id}',
+                Exten='s',
+                Priority='1',
+                CallerID=f'{caller_id_name} <{caller_id_num}>',
+                Timeout='30000',
+                Async='true',
+                Variable=f'CAMPAIGN_ID={self.campaign.id},PHONE_NUMBER={phone.phone_number},TRANSFER_NUMBER={self.campaign.transfer_number},SIP_TRUNK={trunk_name}'
+            )
+            
+            response = self.ami_client.send_action(action)
+            
+            # Wait for response and check if successful
+            time.sleep(0.5)  # Give AMI time to respond
+            
+            response_str = str(response)
+            logger.info(f"AMI Originate response for {phone.phone_number}: {response_str}")
+            
+            # Check if originate command succeeded
+            if 'Error' in response_str and 'Success' not in response_str:
+                raise Exception(f"AMI Originate failed: {response_str}")
+            
+            # Create call log
+            call_log = CallLog(
+                campaign_id=self.campaign.id,
+                phone_number=phone.phone_number,
+                status='calling'
+            )
+            db.add(call_log)
+            
+            # Update database
+            phone.status = 'calling'
+            phone.attempts += 1
+            phone.last_attempt = datetime.utcnow()
+            db.commit()
+            
+            logger.info(f"Call initiated to {phone.phone_number} via {trunk_name}")
+            
+        except Exception as e:
+            logger.error(f"Failed to make call to {phone.phone_number}: {e}")
+            phone.status = 'failed'
+            phone.last_error = str(e)
+            db.commit()
+            
+            # Remove from active calls
+            if call_id in self.active_calls:
+                del self.active_calls[call_id]
+            
+            # Random outcome for demonstration
+            import random
+            outcome = random.choice(['transferred', 'callback', 'no-answer', 'completed'])
+            
+            if outcome == 'transferred':
+                # Send Telegram notification
+                if self.telegram_callback:
+                    asyncio.run(self.telegram_callback(
+                        self.campaign.user_id,
+                        f"🔔 **Transfer Request**\n\nCampaign: {self.campaign.name}\nPhone: {phone.phone_number}\n\nCaller pressed 1 and ready for transfer!"
+                    ))
+            elif outcome == 'callback':
+                # Send callback notification
+                if self.telegram_callback:
+                    asyncio.run(self.telegram_callback(
+                        self.campaign.user_id,
+                        f"📞 **Callback Request**\n\nCampaign: {self.campaign.name}\nPhone: {phone.phone_number}\n\nCaller requested a callback!"
+                    ))
+            
+            # Log the call
+            call_log = CallLog(
+                campaign_id=self.campaign.id,
+                phone_number=phone.phone_number,
+                status=outcome,
+                duration=int(time.time() - self.active_calls[call_id]['start_time']),
+                pressed_key='1' if outcome == 'transferred' else '2' if outcome == 'callback' else None
+            )
+            self.db.add(call_log)
+            
+            phone.status = 'completed' if outcome in ['transferred', 'callback', 'completed'] else 'failed'
+            self.db.commit()
+            
+            # Remove from active
+            del self.active_calls[call_id]
+            
+        except Exception as e:
+            logger.error(f"Call failed for {phone.phone_number}: {e}")
+            phone.status = 'failed'
+            self.db.commit()
+    
+    def pause(self):
+        """Pause campaign"""
+        self.paused = True
+        logger.info(f"Campaign {self.campaign.id} paused")
+    
+    def resume(self):
+        """Resume campaign"""
+        self.paused = False
+        logger.info(f"Campaign {self.campaign.id} resumed")
+    
+    def stop(self):
+        """Stop campaign"""
+        self.running = False
+        logger.info(f"Campaign {self.campaign.id} stopped")
+    
+    def _on_complete(self):
+        """Handle campaign completion"""
+        logger.info(f"Campaign {self.campaign.id} completed")
+        
+        if self.telegram_callback:
+            # Get final stats
+            from database import Campaign, PhoneNumber
+            
+            stats = {
+                'total': len(self.phone_numbers),
+                'completed': self.db.query(PhoneNumber).filter_by(
+                    campaign_id=self.campaign.id,
+                    status='completed'
+                ).count()
+            }
+            
+            asyncio.run(self.telegram_callback(
+                self.campaign.user_id,
+                f"✅ **Campaign Completed**\n\nCampaign: {self.campaign.name}\nTotal Calls: {stats['total']}\nCompleted: {stats['completed']}"
+            ))
+        
+        self.campaign.status = 'completed'
+        self.campaign.completed_at = datetime.utcnow()
+        self.db.commit()
+    
+    def _on_error(self, error_message):
+        """Handle campaign error"""
+        logger.error(f"Campaign {self.campaign.id} error: {error_message}")
+        
+        if self.telegram_callback:
+            asyncio.run(self.telegram_callback(
+                self.campaign.user_id,
+                f"❌ **Campaign Error**\n\nCampaign: {self.campaign.name}\nError: {error_message}"
+            ))
