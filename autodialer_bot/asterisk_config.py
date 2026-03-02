@@ -386,15 +386,19 @@ sort=alpha
             return """#!/bin/bash
 # Asterisk Auto-Installation Script for Ubuntu/Debian
 set -e
+set -o pipefail
 
 echo "========================================="
 echo "  Asterisk Auto-Dialer Installation"
 echo "========================================="
 
+# Error handling
+trap 'echo "ERROR: Installation failed at line $LINENO"; exit 1' ERR
+
 # Update system
 echo "📦 Updating system packages..."
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
+apt-get update -qq || { echo "ERROR: apt-get update failed - check internet connection"; exit 1; }
 
 # Install dependencies
 echo "📦 Installing dependencies..."
@@ -410,19 +414,20 @@ apt-get install -y -qq \\
     libsqlite3-dev \\
     uuid-dev \\
     libjansson-dev \\
-    libedit-dev
+    libedit-dev || { echo "ERROR: Dependencies installation failed"; exit 1; }
 
 # Install Asterisk from repo (faster than compiling)
 echo "📦 Installing Asterisk..."
-apt-get install -y -qq asterisk
+apt-get install -y -qq asterisk || { echo "ERROR: Asterisk package not found - you may need to add universe repository"; exit 1; }
 
 # Install additional packages
+echo "📦 Installing additional components..."
 apt-get install -y -qq \\
     asterisk-config \\
     asterisk-core-sounds-en \\
     asterisk-core-sounds-en-gsm \\
     asterisk-modules \\
-    asterisk-voicemail
+    asterisk-voicemail 2>/dev/null || echo "WARN: Some optional packages not available"
 
 # Create directories
 echo "📁 Creating directories..."
@@ -432,10 +437,11 @@ mkdir -p /var/log/asterisk
 mkdir -p /var/spool/asterisk
 
 # Set permissions
-chown -R asterisk:asterisk /var/lib/asterisk
-chown -R asterisk:asterisk /var/log/asterisk
-chown -R asterisk:asterisk /var/spool/asterisk
-chown -R asterisk:asterisk /etc/asterisk
+echo "🔐 Setting permissions..."
+chown -R asterisk:asterisk /var/lib/asterisk 2>/dev/null || true
+chown -R asterisk:asterisk /var/log/asterisk 2>/dev/null || true
+chown -R asterisk:asterisk /var/spool/asterisk 2>/dev/null || true
+chown -R asterisk:asterisk /etc/asterisk 2>/dev/null || true
 
 # Enable and start Asterisk
 echo "🚀 Starting Asterisk..."

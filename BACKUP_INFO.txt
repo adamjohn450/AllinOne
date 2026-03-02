@@ -1,0 +1,47 @@
+=== AUTODIALER BOT BACKUP ===
+Created: 2026-03-02 08:05:45 UTC
+File: autodialer_backup_20260302_080545.tar.gz
+Size: 144KB
+Files: 31
+
+=== WHAT'S INCLUDED ===
+✅ All Python source code (bot.py, campaign_manager.py, etc.)
+✅ Configuration files
+✅ Database schema (database.py)
+✅ Documentation (IMPLEMENTATION_COMPLETE.md, AUDIO_SETUP.md, etc.)
+✅ License manager and SIP manager
+✅ Asterisk config generator
+✅ VPS manager
+
+=== EXCLUDED ===
+❌ __pycache__ directories
+❌ .pyc compiled files
+❌ .mp3 audio files (too large)
+❌ .pid process files
+❌ .backup files
+
+=== RECENT CHANGES IN THIS BACKUP ===
+1. VPS setup SIP prompt fix (both code paths)
+2. Better SSH connection error messages
+3. VPS manager with timeout and detailed errors
+4. All files synced with production VPS (103.136.43.79)
+
+=== TO RESTORE ===
+tar -xzf autodialer_backup_20260302_080545.tar.gz
+
+=== VPS STATUS AT BACKUP TIME ===
+- Production VPS: 103.136.43.79
+- Code is 100% synced with this backup
+- Bot running via systemd (autodialer-bot.service)
+- SIP registration: WORKING (using IP 185.235.143.10)
+- Audio files: Uploaded to VPS
+
+=== TESTED FEATURES ===
+✅ P1 Vics button (shows transferred calls)
+✅ Redial function (excludes pressed-1 numbers)
+✅ VPS setup wizard with SIP configuration
+✅ Asterisk installation and auto-configuration
+✅ SIP trunk registration
+✅ Audio file management
+✅ Campaign management
+

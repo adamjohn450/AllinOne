@@ -1,82 +1,94 @@
+#!/usr/bin/env python3
 """
-License Management System
-Handles license generation, validation, and enforcement
+License Manager for AutoDialer Bot
+Simple UUID-based license system with database storage
 """
-import hashlib
+
 import secrets
-import json
 from datetime import datetime, timedelta
-from cryptography.fernet import Fernet
-from typing import Optional, Dict
-import os
+from typing import Dict, Optional, List
+from database import SessionLocal, License
+from sqlalchemy.exc import IntegrityError
 
 
 class LicenseManager:
     """
     Manages license key generation and validation
+    Keys format: P{plan}-{segment1}-{segment2}-{segment3}
+    Example: P1-A3F5-B7C9-E2D4
     """
     
-    def __init__(self):
-        """Initialize license manager with encryption key"""
-        # Get or create encryption key
-        self.key = self._get_or_create_key()
-        self.cipher = Fernet(self.key)
-    
-    def _get_or_create_key(self) -> bytes:
-        """Get existing key or create new one"""
-        key_file = "license.key"
-        
-        if os.path.exists(key_file):
-            with open(key_file, 'rb') as f:
-                return f.read()
-        else:
-            # Generate new key
-            key = Fernet.generate_key()
-            with open(key_file, 'wb') as f:
-                f.write(key)
-            return key
+    PLAN_TYPES = {
+        1: {'name': 'Standard', 'max_campaigns': 999, 'max_calls': 10000},
+        2: {'name': 'Premium', 'max_campaigns': 9999, 'max_calls': 100000},
+        3: {'name': 'Trial', 'max_campaigns': 3, 'max_calls': 100}
+    }
     
     def generate_license(
         self,
-        user_id: Optional[int] = None,
-        max_campaigns: int = 999,
-        max_calls_per_day: int = 10000,
-        expiry_days: int = 365
+        plan_type: int = 1,
+        max_campaigns: Optional[int] = None,
+        max_calls_per_day: Optional[int] = None,
+        expiry_days: int = 365,
+        user_id: Optional[int] = None
     ) -> str:
         """
         Generate a new license key
         
         Args:
-            user_id: Telegram user ID (None for unassigned)
-            max_campaigns: Maximum concurrent campaigns
-            max_calls_per_day: Daily call limit
-            expiry_days: License validity in days
+            plan_type: 1=Standard, 2=Premium, 3=Trial
+            max_campaigns: Override default max campaigns
+            max_calls_per_day: Override default max calls
+            expiry_days: Days until expiration
+            user_id: Optional pre-assignment to user
         
         Returns:
-            Encrypted license key string
+            License key in format P1-XXXX-XXXX-XXXX
         """
-        # Calculate expiry date
-        expiry = datetime.now() + timedelta(days=expiry_days)
+        # Get plan defaults
+        plan = self.PLAN_TYPES.get(plan_type, self.PLAN_TYPES[1])
         
-        # Create license data
-        license_data = {
-            'user_id': user_id,
-            'max_campaigns': max_campaigns,
-            'max_calls_per_day': max_calls_per_day,
-            'created_at': datetime.now().isoformat(),
-            'expires_at': expiry.isoformat(),
-            'nonce': secrets.token_hex(16)  # Unique identifier
-        }
+        if max_campaigns is None:
+            max_campaigns = plan['max_campaigns']
+        if max_calls_per_day is None:
+            max_calls_per_day = plan['max_calls']
         
-        # Encode and encrypt
-        json_data = json.dumps(license_data)
-        encrypted = self.cipher.encrypt(json_data.encode())
+        # Generate unique key
+        while True:
+            # Generate 3 segments of 4 hex chars each
+            segments = [secrets.token_hex(2).upper() for _ in range(3)]
+            key = f"P{plan_type}-{'-'.join(segments)}"
+            
+            # Check if key already exists
+            db = SessionLocal()
+            try:
+                existing = db.query(License).filter_by(key=key).first()
+                if not existing:
+                    break
+            finally:
+                db.close()
         
-        # Create readable key format (groups of 4 chars)
-        hex_key = encrypted.hex()
-        formatted = '-'.join([hex_key[i:i+4] for i in range(0, min(len(hex_key), 20), 4)])
-        
-        return formatted.upper()
+        # Create license in database
+        db = SessionLocal()
+        try:
+            license_obj = License(
+                key=key,
+                plan_type=plan_type,
+                max_campaigns=max_campaigns,
+                max_calls_per_day=max_calls_per_day,
+                expires_at=datetime.utcnow() + timedelta(days=expiry_days),
+                assigned_user_id=user_id,
+                assigned_at=datetime.utcnow() if user_id else None
+            )
+            db.add(license_obj)
+            db.commit()
+            return key
+        except IntegrityError:
+            db.rollback()
+            # Key collision (very unlikely), retry
+            return self.generate_license(plan_type, max_campaigns, max_calls_per_day, expiry_days, user_id)
+        finally:
+            db.close()
     
     def validate_license(self, license_key: str, user_id: int) -> Dict:
         """
@@ -84,205 +96,149 @@ class LicenseManager:
         
         Args:
             license_key: License key to validate
-            user_id: Telegram user ID attempting to use license
+            user_id: Telegram user ID attempting to use
         
         Returns:
-            Dict with validation result and license data
             {
                 'valid': bool,
                 'reason': str,
-                'data': dict or None
+                'data': License object or None
             }
         """
+        db = SessionLocal()
         try:
-            # Remove formatting
-            clean_key = license_key.replace('-', '').replace(' ', '')
+            # Clean key
+            clean_key = license_key.strip().upper().replace(' ', '')
             
-            # Convert back to bytes
-            encrypted = bytes.fromhex(clean_key)
+            # Find license
+            license_obj = db.query(License).filter_by(key=clean_key).first()
             
-            # Decrypt
-            decrypted = self.cipher.decrypt(encrypted)
-            license_data = json.loads(decrypted.decode())
+            if not license_obj:
+                return {
+                    'valid': False,
+                    'reason': 'License key not found',
+                    'data': None
+                }
+            
+            # Check if active
+            if not license_obj.is_active:
+                return {
+                    'valid': False,
+                    'reason': 'License has been deactivated',
+                    'data': None
+                }
             
             # Check expiry
-            expiry = datetime.fromisoformat(license_data['expires_at'])
-            if datetime.now() > expiry:
+            if datetime.utcnow() > license_obj.expires_at:
                 return {
                     'valid': False,
                     'reason': 'License expired',
                     'data': None
                 }
             
-            # Check user assignment
-            if license_data['user_id'] is not None and license_data['user_id'] != user_id:
+            # Check if already assigned to different user
+            if license_obj.assigned_user_id and license_obj.assigned_user_id != user_id:
                 return {
                     'valid': False,
                     'reason': 'License already assigned to another user',
                     'data': None
                 }
             
-            # Valid license
+            # Valid!
             return {
                 'valid': True,
-                'reason': 'License valid',
-                'data': license_data
+                'reason': 'Valid',
+                'data': license_obj
             }
-            
-        except Exception as e:
-            return {
-                'valid': False,
-                'reason': f'Invalid license key format: {str(e)}',
-                'data': None
-            }
+        
+        finally:
+            db.close()
     
     def assign_license_to_user(self, license_key: str, user_id: int) -> bool:
         """
-        Assign a license to a specific user (first use)
+        Assign a license to a user
         
         Args:
-            license_key: License key to assign
+            license_key: License key
             user_id: Telegram user ID
         
         Returns:
-            True if assignment successful
+            True if successful
         """
+        db = SessionLocal()
         try:
-            # Validate first
-            result = self.validate_license(license_key, user_id)
+            clean_key = license_key.strip().upper().replace(' ', '')
+            license_obj = db.query(License).filter_by(key=clean_key).first()
             
-            if not result['valid']:
+            if not license_obj:
                 return False
             
-            # If already assigned to this user, OK
-            if result['data']['user_id'] == user_id:
-                return True
+            # Assign if not already assigned
+            if not license_obj.assigned_user_id:
+                license_obj.assigned_user_id = user_id
+                license_obj.assigned_at = datetime.utcnow()
+                db.commit()
             
-            # If unassigned, assign it
-            if result['data']['user_id'] is None:
-                # Decrypt and update
-                clean_key = license_key.replace('-', '').replace(' ', '')
-                encrypted = bytes.fromhex(clean_key)
-                decrypted = self.cipher.decrypt(encrypted)
-                license_data = json.loads(decrypted.decode())
-                
-                # Update user_id
-                license_data['user_id'] = user_id
-                license_data['assigned_at'] = datetime.now().isoformat()
-                
-                # Re-encrypt and save
-                json_data = json.dumps(license_data)
-                new_encrypted = self.cipher.encrypt(json_data.encode())
-                
-                # Note: In production, store this mapping in database
-                # For now, just validate that assignment would work
-                return True
-            
-            return False
-            
-        except Exception:
-            return False
+            return True
+        
+        finally:
+            db.close()
     
-    def get_license_info(self, license_key: str) -> Optional[Dict]:
+    def get_license_info(self, license_key: str) -> Optional[License]:
         """
-        Get license information without validation
+        Get license information
         
         Args:
             license_key: License key
         
         Returns:
-            License data dict or None
+            License object or None
         """
+        db = SessionLocal()
         try:
-            clean_key = license_key.replace('-', '').replace(' ', '')
-            encrypted = bytes.fromhex(clean_key)
-            decrypted = self.cipher.decrypt(encrypted)
-            return json.loads(decrypted.decode())
-        except Exception:
-            return None
+            clean_key = license_key.strip().upper().replace(' ', '')
+            return db.query(License).filter_by(key=clean_key).first()
+        finally:
+            db.close()
     
-    def check_feature_allowed(
-        self,
-        license_data: Dict,
-        feature: str,
-        current_usage: int = 0
-    ) -> bool:
+    def get_license_limits(self, license_obj: License) -> Dict:
         """
-        Check if a feature is allowed under license
+        Get license limits
         
         Args:
-            license_data: Decrypted license data
-            feature: Feature to check ('campaigns' or 'calls')
-            current_usage: Current usage count
-        
-        Returns:
-            True if feature is allowed
-        """
-        if feature == 'campaigns':
-            return current_usage < license_data.get('max_campaigns', 0)
-        
-        elif feature == 'calls':
-            return current_usage < license_data.get('max_calls_per_day', 0)
-        
-        return False
-    
-    def get_license_limits(self, license_data: Dict) -> Dict:
-        """
-        Get all license limits
-        
-        Args:
-            license_data: Decrypted license data
+            license_obj: License database object
         
         Returns:
             Dict with limits
         """
+        if not license_obj:
+            return {
+                'max_campaigns': 0,
+                'max_calls_per_day': 0,
+                'days_remaining': 0,
+                'expires_at': None
+            }
+        
+        days_remaining = (license_obj.expires_at - datetime.utcnow()).days
+        
         return {
-            'max_campaigns': license_data.get('max_campaigns', 0),
-            'max_calls_per_day': license_data.get('max_calls_per_day', 0),
-            'expires_at': license_data.get('expires_at'),
-            'days_remaining': self._get_days_remaining(license_data)
+            'max_campaigns': license_obj.max_campaigns,
+            'max_calls_per_day': license_obj.max_calls_per_day,
+            'days_remaining': max(0, days_remaining),
+            'expires_at': license_obj.expires_at
         }
     
-    def _get_days_remaining(self, license_data: Dict) -> int:
-        """Calculate days remaining until expiry"""
-        try:
-            expiry = datetime.fromisoformat(license_data['expires_at'])
-            delta = expiry - datetime.now()
-            return max(0, delta.days)
-        except Exception:
-            return 0
-    
     def generate_test_license(self, days: int = 7) -> str:
-        """
-        Generate a test/trial license
-        
-        Args:
-            days: Trial period in days
-        
-        Returns:
-            License key for trial
-        """
+        """Generate trial license"""
         return self.generate_license(
-            user_id=None,
-            max_campaigns=3,
-            max_calls_per_day=100,
+            plan_type=3,
             expiry_days=days
         )
     
     def generate_premium_license(self, years: int = 1) -> str:
-        """
-        Generate a premium/unlimited license
-        
-        Args:
-            years: License validity in years
-        
-        Returns:
-            License key for premium
-        """
+        """Generate premium license"""
         return self.generate_license(
-            user_id=None,
-            max_campaigns=999,
-            max_calls_per_day=100000,
+            plan_type=2,
             expiry_days=years * 365
         )
     
@@ -290,33 +246,33 @@ class LicenseManager:
         self,
         count: int,
         license_type: str = 'standard'
-    ) -> list:
+    ) -> List[str]:
         """
-        Generate multiple licenses at once
+        Generate multiple licenses
         
         Args:
-            count: Number of licenses to generate
+            count: Number of licenses
             license_type: 'trial', 'standard', or 'premium'
         
         Returns:
             List of license keys
         """
+        plan_map = {
+            'trial': 3,
+            'standard': 1,
+            'premium': 2
+        }
+        
+        plan_type = plan_map.get(license_type.lower(), 1)
         licenses = []
         
         for _ in range(count):
-            if license_type == 'trial':
-                key = self.generate_test_license()
-            elif license_type == 'premium':
-                key = self.generate_premium_license()
-            else:  # standard
-                key = self.generate_license()
-            
+            key = self.generate_license(plan_type=plan_type)
             licenses.append(key)
         
         return licenses
 
 
-# Command-line interface for license generation
 if __name__ == '__main__':
     import sys
     
@@ -331,7 +287,6 @@ if __name__ == '__main__':
         command = sys.argv[1]
         
         if command == 'trial':
-            # Generate trial license
             days = int(sys.argv[2]) if len(sys.argv) > 2 else 7
             key = lm.generate_test_license(days)
             print(f"🎫 Trial License ({days} days):")
@@ -339,15 +294,13 @@ if __name__ == '__main__':
             print()
             
         elif command == 'standard':
-            # Generate standard license
             years = int(sys.argv[2]) if len(sys.argv) > 2 else 1
-            key = lm.generate_license(expiry_days=years * 365)
+            key = lm.generate_license(plan_type=1, expiry_days=years * 365)
             print(f"🎫 Standard License ({years} year):")
             print(f"   {key}")
             print()
             
         elif command == 'premium':
-            # Generate premium license
             years = int(sys.argv[2]) if len(sys.argv) > 2 else 1
             key = lm.generate_premium_license(years)
             print(f"🎫 Premium License ({years} year):")
@@ -355,7 +308,6 @@ if __name__ == '__main__':
             print()
             
         elif command == 'batch':
-            # Generate multiple licenses
             count = int(sys.argv[2]) if len(sys.argv) > 2 else 10
             license_type = sys.argv[3] if len(sys.argv) > 3 else 'standard'
             
@@ -377,7 +329,6 @@ if __name__ == '__main__':
             print()
             
         elif command == 'validate':
-            # Validate a license
             if len(sys.argv) < 3:
                 print("Usage: python license_manager.py validate <license-key> [user-id]")
                 sys.exit(1)
@@ -390,12 +341,15 @@ if __name__ == '__main__':
             if result['valid']:
                 print("✅ License Valid!")
                 print()
-                info = lm.get_license_info(key)
-                limits = lm.get_license_limits(info)
+                license_obj = result['data']
+                limits = lm.get_license_limits(license_obj)
+                plan_name = lm.PLAN_TYPES.get(license_obj.plan_type, {}).get('name', 'Unknown')
+                print(f"   Plan:             {plan_name}")
                 print(f"   Max Campaigns:    {limits['max_campaigns']}")
                 print(f"   Max Calls/Day:    {limits['max_calls_per_day']}")
                 print(f"   Days Remaining:   {limits['days_remaining']}")
                 print(f"   Expires:          {limits['expires_at']}")
+                print(f"   Assigned:         {'Yes' if license_obj.assigned_user_id else 'No'}")
             else:
                 print(f"❌ License Invalid: {result['reason']}")
             
@@ -403,18 +357,24 @@ if __name__ == '__main__':
         
         else:
             print(f"Unknown command: {command}")
+            print()
+            print("Usage:")
+            print("  python license_manager.py trial [days]")
+            print("  python license_manager.py standard [years]")
+            print("  python license_manager.py premium [years]")
+            print("  python license_manager.py batch <count> <type>")
+            print("  python license_manager.py validate <key> [user-id]")
             sys.exit(1)
     
     else:
         # Interactive mode
         print("Select license type:")
         print("  1. Trial (7 days, 3 campaigns, 100 calls/day)")
-        print("  2. Standard (1 year, unlimited campaigns, 10k calls/day)")
-        print("  3. Premium (1 year, unlimited campaigns, 100k calls/day)")
-        print("  4. Custom")
+        print("  2. Standard (1 year, 999 campaigns, 10k calls/day)")
+        print("  3. Premium (1 year, 9999 campaigns, 100k calls/day)")
         print()
         
-        choice = input("Enter choice (1-4): ").strip()
+        choice = input("Enter choice (1-3): ").strip()
         
         if choice == '1':
             days = input("Trial days [7]: ").strip() or '7'
@@ -422,23 +382,11 @@ if __name__ == '__main__':
         
         elif choice == '2':
             years = input("Years [1]: ").strip() or '1'
-            key = lm.generate_license(expiry_days=int(years) * 365)
+            key = lm.generate_license(plan_type=1, expiry_days=int(years) * 365)
         
         elif choice == '3':
             years = input("Years [1]: ").strip() or '1'
             key = lm.generate_premium_license(int(years))
-        
-        elif choice == '4':
-            print()
-            max_campaigns = int(input("Max campaigns [999]: ").strip() or '999')
-            max_calls = int(input("Max calls/day [10000]: ").strip() or '10000')
-            days = int(input("Valid for days [365]: ").strip() or '365')
-            
-            key = lm.generate_license(
-                max_campaigns=max_campaigns,
-                max_calls_per_day=max_calls,
-                expiry_days=days
-            )
         
         else:
             print("Invalid choice")
@@ -451,15 +399,3 @@ if __name__ == '__main__':
         print(f"   {key}")
         print()
         print("=" * 60)
-        print()
-        print("Give this key to your customer.")
-        print("They will enter it in the Telegram bot.")
-        print()
-    
-    print("Usage examples:")
-    print("  python license_manager.py trial 14")
-    print("  python license_manager.py standard 1")
-    print("  python license_manager.py premium 2")
-    print("  python license_manager.py batch 10 standard")
-    print("  python license_manager.py validate <key> <user-id>")
-    print()

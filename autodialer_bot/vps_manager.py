@@ -20,6 +20,7 @@ class VPSManager:
         self.password = password
         self.key_path = key_path
         self.client = None
+        self.last_error = None
     
     def connect(self) -> bool:
         """Connect to VPS via SSH"""
@@ -32,20 +33,32 @@ class VPSManager:
                     self.host,
                     port=self.port,
                     username=self.username,
-                    key_filename=self.key_path
+                    key_filename=self.key_path,
+                    timeout=10
                 )
             else:
                 self.client.connect(
                     self.host,
                     port=self.port,
                     username=self.username,
-                    password=self.password
+                    password=self.password,
+                    timeout=10
                 )
             
             logger.info(f"Connected to VPS: {self.host}")
+            self.last_error = None
             return True
+        except paramiko.AuthenticationException as e:
+            self.last_error = f"Authentication failed - check username/password"
+            logger.error(f"Authentication failed for {self.host}: {e}")
+            return False
+        except paramiko.SSHException as e:
+            self.last_error = f"SSH error: {str(e)}"
+            logger.error(f"SSH error for {self.host}: {e}")
+            return False
         except Exception as e:
-            logger.error(f"Failed to connect to VPS: {e}")
+            self.last_error = f"Connection error: {str(e)}"
+            logger.error(f"Failed to connect to VPS {self.host}: {e}")
             return False
     
     def disconnect(self):
@@ -124,7 +137,22 @@ class VPSManager:
             if self.check_asterisk_installed():
                 if progress_callback:
                     progress_callback("✅ Asterisk already installed!")
-                return self.configure_asterisk(progress_callback)
+                    progress_callback("⚙️ Now configuring Asterisk for auto-dialing...")
+                    progress_callback("This will set up AMI, dialplan, and other configs.")
+                config_result = self.configure_asterisk(progress_callback)
+                if config_result.get('success'):
+                    if progress_callback:
+                        progress_callback(f"✅ Asterisk configured successfully!")
+                        progress_callback(f"")
+                        progress_callback(f"Your VPS is ready to make calls!")
+                        progress_callback(f"")
+                        progress_callback(f"AMI Credentials:")
+                        progress_callback(f"• Username: {config_result['ami_username']}")
+                        progress_callback(f"• Password: {config_result['ami_password']}")
+                        progress_callback(f"")
+                        progress_callback(f"These have been saved securely.")
+                    return config_result  # Return dict with credentials
+                return False
             
             if progress_callback:
                 progress_callback(f"📦 Installing on {os_type.title()}...")
@@ -144,15 +172,20 @@ class VPSManager:
             
             # Make executable and run
             self.execute_command(f'chmod +x {script_path}')
-            result = self.execute_command(f'{script_path}', sudo=True)
+            result = self.execute_command(f'bash {script_path} 2>&1', sudo=True)
             
             if result['success']:
                 if progress_callback:
                     progress_callback("✅ Asterisk installed successfully!")
                 return True
             else:
+                error_msg = result.get('error', '') or result.get('output', '')
+                # Get last 5 lines of error for debugging
+                error_lines = error_msg.strip().split('\n')[-5:]
+                detailed_error = '\n'.join(error_lines)
+                logger.error(f"Asterisk installation failed. Last output:\n{detailed_error}")
                 if progress_callback:
-                    progress_callback(f"❌ Installation failed: {result['error']}")
+                    progress_callback(f"❌ Installation failed: {detailed_error}")
                 return False
                 
         except Exception as e:

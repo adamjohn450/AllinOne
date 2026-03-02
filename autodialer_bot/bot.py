@@ -24,6 +24,7 @@ from database import init_db, SessionLocal, User, Campaign, VPSServer, PhoneNumb
 from ui_builder import UIBuilder
 from vps_manager import VPSManager
 from campaign_manager import CampaignManager
+from license_manager import LicenseManager
 
 # Configure logging
 logging.basicConfig(
@@ -36,7 +37,8 @@ logger = logging.getLogger(__name__)
 (SETUP_LICENSE, SETUP_VPS_HOST, SETUP_VPS_PORT, SETUP_VPS_USER, SETUP_VPS_PASS,
  SETUP_AMI_USER, SETUP_AMI_PASS, SETUP_SIP_TYPE, SETUP_SIP_SERVER, SETUP_SIP_USER, 
  SETUP_SIP_PASS, SETUP_GOOGLE_EMAIL, SETUP_GOOGLE_PASS, SETUP_GOOGLE_PHONE,
- CAMPAIGN_NAME, CAMPAIGN_AUDIO, CAMPAIGN_CONCURRENT, CAMPAIGN_PHONES, RENAME_VPS) = range(19)
+ CAMPAIGN_NAME, CAMPAIGN_AUDIO, CAMPAIGN_CONCURRENT, CAMPAIGN_PHONES, RENAME_VPS,
+ KEY_DAYS, KEY_CALLS, KEY_CAMPAIGNS) = range(22)
 
 
 def get_default_sip_account(db, user_id):
@@ -103,21 +105,32 @@ class AutoDialerBot:
         db = SessionLocal()
         
         try:
-            # Validate license (simplified - in production, verify against server)
-            if len(license_key) < 10:
+            # Validate license using LicenseManager
+            license_mgr = LicenseManager()
+            validation_result = license_mgr.validate_license(license_key, user.id)
+            
+            if not validation_result['valid']:
                 await update.message.reply_text(
-                    "❌ Invalid license key. Please try again:"
+                    f"❌ Invalid license key: {validation_result['reason']}\n\n"
+                    "Please enter a valid license key:"
                 )
                 return SETUP_LICENSE
             
-            # Create user
+            # Extract license info
+            license_obj = validation_result['data']
+            limits = license_mgr.get_license_limits(license_obj)
+            
+            # Assign license to user
+            license_mgr.assign_license_to_user(license_key, user.id)
+            
+            # Create user with proper license data
             db_user = User(
                 telegram_id=user.id,
                 username=user.username,
                 first_name=user.first_name,
-                license_key=license_key,
-                license_valid_until=datetime.utcnow() + timedelta(days=365),
-                max_campaigns=999
+                license_key=license_key.upper().strip(),
+                license_valid_until=license_obj.expires_at,
+                max_campaigns=license_obj.max_campaigns
             )
             db.add(db_user)
             db.commit()
@@ -216,7 +229,8 @@ class AutoDialerBot:
             port=context.user_data['vps_port']
         )
         
-        if vps.connect():
+        connect_result = vps.connect()
+        if connect_result:
             await status_msg.edit_text(
                 "✅ VPS connection successful!\n\n"
                 "Now checking Asterisk installation..."
@@ -252,13 +266,24 @@ class AutoDialerBot:
                         f"**AMI Credentials:**\n"
                         f"• Username: `{context.user_data['ami_user']}`\n"
                         f"• Password: `{context.user_data['ami_pass']}`\n\n"
-                        f"These have been saved securely.\n\n"
-                        f"Completing VPS setup...",
+                        f"These have been saved securely.",
                         parse_mode='Markdown'
                     )
                     
-                    # Skip to saving VPS - credentials already set
-                    return await self.save_vps_config(update, context)
+                    await asyncio.sleep(2)
+                    
+                    # Ask for SIP setup
+                    await status_msg.edit_text(
+                        "🔌 **SIP Account Setup**\n\n"
+                        "Choose your SIP provider type:",
+                        reply_markup=InlineKeyboardMarkup([
+                            [InlineKeyboardButton("📞 Regular SIP Account", callback_data="sip_type_sip")],
+                            [InlineKeyboardButton("🔗 Google Voice (JMP.chat)", callback_data="sip_type_google")],
+                            [InlineKeyboardButton("⏭️ Skip SIP Setup", callback_data="sip_type_skip")]
+                        ]),
+                        parse_mode='Markdown'
+                    )
+                    return SETUP_SIP_TYPE
                 else:
                     await status_msg.edit_text(
                         "⚠️ **Asterisk found but configuration failed.**\n\n"
@@ -282,10 +307,17 @@ class AutoDialerBot:
                 vps.disconnect()
                 return SETUP_AMI_USER
         else:
+            error_detail = vps.last_error or "Unknown connection error"
             await status_msg.edit_text(
-                "❌ Failed to connect to VPS.\n\n"
-                "Please check your credentials and try again.\n\n"
-                "Use /start to restart setup."
+                f"❌ **Failed to connect to VPS**\n\n"
+                f"Error: `{error_detail}`\n\n"
+                f"Please check:\n"
+                f"• Host: `{context.user_data['vps_host']}`\n"
+                f"• Port: `{context.user_data['vps_port']}`\n"
+                f"• Username: `{context.user_data['vps_user']}`\n"
+                f"• Password (check carefully)\n\n"
+                f"Use /start to restart setup.",
+                parse_mode='Markdown'
             )
             vps.disconnect()
             return ConversationHandler.END
@@ -314,25 +346,67 @@ class AutoDialerBot:
             # It runs in a sync context, so we can't use async progress updates
             
             if vps.connect():
-                # For now, skip progress callback to avoid asyncio issues
-                success = vps.install_asterisk()
+                # Store error messages for user
+                error_log = []
+                
+                def progress_cb(msg):
+                    error_log.append(msg)
+                    logger.info(f"VPS Setup: {msg}")
+                
+                result = vps.install_asterisk(progress_callback=progress_cb)
                 vps.disconnect()
                 
-                if success:
-                    await status_msg.edit_text(
-                        "✅ **Asterisk installed successfully!**\n\n"
-                        "Your VPS is ready to make calls!\n\n"
-                        "Default AMI credentials:\n"
-                        "• Username: `autodialer`\n"
-                        "• Password: `autodialer_pass_change_me`\n\n"
-                        "Please enter AMI username:",
-                        parse_mode='Markdown'
-                    )
-                    return SETUP_AMI_USER
+                # Handle both boolean (fresh install) and dict (already installed with config)
+                if result:
+                    # Check if result is dict with credentials (already installed case)
+                    if isinstance(result, dict) and result.get('ami_username'):
+                        # Auto-configure case - save credentials and go to SIP setup
+                        context.user_data['ami_user'] = result['ami_username']
+                        context.user_data['ami_pass'] = result['ami_password']
+                        
+                        # Show all progress messages
+                        await status_msg.edit_text('\n'.join(error_log))
+                        await asyncio.sleep(2)
+                        
+                        # Ask for SIP type
+                        await status_msg.edit_text(
+                            "🔌 **SIP Account Setup**\n\n"
+                            "Choose your SIP provider type:",
+                            reply_markup=InlineKeyboardMarkup([
+                                [InlineKeyboardButton("📞 Regular SIP Account", callback_data="sip_type_sip")],
+                                [InlineKeyboardButton("🔗 Google Voice (JMP.chat)", callback_data="sip_type_google")],
+                                [InlineKeyboardButton("⏭️ Skip SIP Setup", callback_data="sip_type_skip")]
+                            ]),
+                            parse_mode='Markdown'
+                        )
+                        return SETUP_SIP_TYPE
+                    else:
+                        # Fresh install case - ask for AMI credentials
+                        await status_msg.edit_text(
+                            "✅ **Asterisk installed successfully!**\n\n"
+                            "Your VPS is ready to make calls!\n\n"
+                            "Default AMI credentials:\n"
+                            "• Username: `autodialer`\n"
+                            "• Password: `autodialer_pass_change_me`\n\n"
+                            "Please enter AMI username:",
+                            parse_mode='Markdown'
+                        )
+                        return SETUP_AMI_USER
                 else:
+                    # Show last error message
+                    last_errors = [msg for msg in error_log if '❌' in msg or 'ERROR' in msg.upper()]
+                    error_detail = last_errors[-1] if last_errors else "Unknown error"
+                    error_detail = error_detail.replace('❌ Installation failed: ', '')
+                    
                     await status_msg.edit_text(
-                        "❌ Installation failed.\n\n"
-                        "Please install Asterisk manually and use /start to continue."
+                        f"❌ **Installation failed**\n\n"
+                        f"Error: `{error_detail[:200]}`\n\n"
+                        f"Please check:\n"
+                        f"• VPS has internet connection\n"
+                        f"• User has sudo access\n"
+                        f"• OS is Ubuntu/Debian\n\n"
+                        f"Or install Asterisk manually and use /start to continue.",
+                        parse_mode='Markdown'
                     )
                     return ConversationHandler.END
         else:
@@ -482,9 +556,6 @@ class AutoDialerBot:
             
         except Exception as e:
             logger.error(f"Failed to configure SIP on VPS: {e}")
-            return ConversationHandler.END
-        finally:
-            db.close()
     
     async def setup_ami_user(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle AMI username input"""
@@ -959,6 +1030,14 @@ Need support? Contact @support
             campaign_id = int(data.split("_")[1])
             await self.show_campaign_logs(query, user.id, campaign_id)
         
+        elif data.startswith("p1vics_"):
+            campaign_id = int(data.split("_")[1])
+            await self.show_pressed1_list(query, user.id, campaign_id)
+        
+        elif data.startswith("redial_"):
+            campaign_id = int(data.split("_")[1])
+            await self.redial_campaign(query, user.id, campaign_id)
+        
         elif data.startswith("delete_") and not data.startswith("delete_campaign_") and not data.startswith("delete_vps_"):
             campaign_id = int(data.split("_")[1])
             await self.delete_campaign(query, user.id, campaign_id)
@@ -1149,20 +1228,26 @@ Need support? Contact @support
     async def show_campaign_logs(self, query, user_id, campaign_id):
         """Send campaign call logs as a CSV/text file"""
         import io
+        
+        # Answer query immediately to prevent timeout
+        await query.answer("📋 Generating logs...")
+        
         db = SessionLocal()
         try:
             user = db.query(User).filter_by(telegram_id=user_id).first()
             campaign = db.query(Campaign).filter_by(id=campaign_id, user_id=user.id).first()
 
             if not campaign:
-                await query.answer("❌ Campaign not found")
+                await query.message.reply_text("❌ Campaign not found")
                 return
 
             from database import CallLog
-            logs = db.query(CallLog).filter_by(campaign_id=campaign_id).order_by(CallLog.timestamp.asc()).all()
+            # Limit to last 10000 logs to prevent timeout
+            logs = db.query(CallLog).filter_by(campaign_id=campaign_id).order_by(CallLog.timestamp.desc()).limit(10000).all()
+            logs.reverse()  # Back to ascending order
 
             if not logs:
-                await query.answer("No call logs yet.")
+                await query.message.reply_text("📋 No call logs yet for this campaign.")
                 return
 
             # Build CSV content
@@ -1183,10 +1268,144 @@ Need support? Contact @support
                 caption=f"📋 Call logs for **{campaign.name}** — {len(logs)} records",
                 parse_mode='Markdown'
             )
-            await query.answer("✅ Logs sent!")
         except Exception as e:
             logger.error(f"show_campaign_logs error: {e}")
-            await query.answer(f"❌ Error: {str(e)[:100]}")
+            try:
+                await query.message.reply_text(f"❌ Error loading logs: {str(e)[:100]}")
+            except:
+                pass
+        finally:
+            db.close()
+    
+    async def show_pressed1_list(self, query, user_id, campaign_id):
+        """Send list of people who pressed 1 (transferred calls) as CSV"""
+        import io
+        
+        # Answer query immediately to prevent timeout
+        await query.answer("📲 Generating P1 victims list...")
+        
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            campaign = db.query(Campaign).filter_by(id=campaign_id, user_id=user.id).first()
+
+            if not campaign:
+                await query.message.reply_text("❌ Campaign not found")
+                return
+
+            from database import CallLog
+            # Filter for pressed_1 calls only
+            logs = db.query(CallLog).filter_by(
+                campaign_id=campaign_id,
+                action_taken='pressed_1'
+            ).order_by(CallLog.timestamp.asc()).all()
+
+            if not logs:
+                await query.message.reply_text("📲 No one pressed 1 yet for this campaign.")
+                return
+
+            # Build CSV content
+            lines = ["phone_number,campaign,timestamp"]
+            for log in logs:
+                ts = log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else ''
+                lines.append(f"{log.phone_number},{campaign.name},{ts}")
+
+            content = "\n".join(lines)
+            file_bytes = io.BytesIO(content.encode('utf-8'))
+            file_bytes.name = f"{campaign.name}_p1_victims.csv"
+
+            await query.message.reply_document(
+                document=file_bytes,
+                filename=f"{campaign.name}_p1_victims.csv",
+                caption=f"📲 **P1 Victims** for **{campaign.name}** — {len(logs)} people pressed 1",
+                parse_mode='Markdown'
+            )
+        except Exception as e:
+            logger.error(f"show_pressed1_list error: {e}")
+            try:
+                await query.message.reply_text(f"❌ Error loading P1 victims: {str(e)[:100]}")
+            except:
+                pass
+        finally:
+            db.close()
+    
+    async def redial_campaign(self, query, user_id, campaign_id):
+        """Redial campaign but exclude numbers that pressed 1"""
+        await query.answer("🔄 Resetting campaign...")
+        
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            campaign = db.query(Campaign).filter_by(id=campaign_id, user_id=user.id).first()
+
+            if not campaign:
+                await query.edit_message_text("❌ Campaign not found")
+                return
+
+            from database import CallLog, PhoneNumber
+            # Get all numbers that pressed 1
+            pressed1_logs = db.query(CallLog).filter_by(
+                campaign_id=campaign_id,
+                action_taken='pressed_1'
+            ).all()
+            
+            pressed1_numbers = {log.phone_number for log in pressed1_logs}
+            
+            # Get total count before deletion
+            total_count = db.query(PhoneNumber).filter_by(campaign_id=campaign_id).count()
+            
+            if not pressed1_numbers:
+                # Just reset all to pending
+                db.query(PhoneNumber).filter_by(campaign_id=campaign_id).update({'status': 'pending', 'attempts': 0})
+                campaign.status = 'pending'
+                campaign.active_calls = 0
+                db.commit()
+                
+                await query.edit_message_text(
+                    f"✅ **{campaign.name}** reset for redial\n\n"
+                    f"📞 Total: {total_count} numbers\n"
+                    f"✋ Pressed 1: 0 numbers (excluded)\n"
+                    f"🔄 Remaining: {total_count} numbers\n\n"
+                    f"Campaign status reset to pending. Start it when ready!",
+                    reply_markup=UIBuilder.campaign_control_menu(campaign),
+                    parse_mode='Markdown'
+                )
+                return
+            
+            # Delete phone numbers that pressed 1
+            deleted_count = db.query(PhoneNumber).filter(
+                PhoneNumber.campaign_id == campaign_id,
+                PhoneNumber.phone_number.in_(pressed1_numbers)
+            ).delete(synchronize_session=False)
+            
+            # Reset remaining numbers to pending
+            db.query(PhoneNumber).filter_by(campaign_id=campaign_id).update({'status': 'pending', 'attempts': 0})
+            
+            # Update campaign
+            remaining_count = total_count - deleted_count
+            campaign.status = 'pending'
+            campaign.total_numbers = remaining_count
+            campaign.active_calls = 0
+            campaign.completed_calls = 0
+            campaign.failed_calls = 0
+            campaign.no_answer_calls = 0
+            db.commit()
+            
+            await query.edit_message_text(
+                f"✅ **{campaign.name}** reset for redial\n\n"
+                f"📞 Original: {total_count} numbers\n"
+                f"✋ Pressed 1: {deleted_count} numbers (excluded)\n"
+                f"🔄 Remaining: {remaining_count} numbers\n\n"
+                f"Campaign status reset to pending. Start it when ready!",
+                reply_markup=UIBuilder.campaign_control_menu(campaign),
+                parse_mode='Markdown'
+            )
+        except Exception as e:
+            logger.error(f"redial_campaign error: {e}")
+            try:
+                await query.edit_message_text(f"❌ Error during redial: {str(e)[:100]}")
+            except:
+                pass
         finally:
             db.close()
     
@@ -2074,10 +2293,23 @@ Need support? Contact @support
             allow_reentry=True
         )
         
+        # License key generation conversation handler (Admin only)
+        key_conv = ConversationHandler(
+            entry_points=[CommandHandler('key', self.key_command)],
+            states={
+                KEY_DAYS: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.key_days_handler)],
+                KEY_CALLS: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.key_calls_handler)],
+                KEY_CAMPAIGNS: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.key_campaigns_handler)]
+            },
+            fallbacks=[CommandHandler('cancel', self.cancel_key)],
+            per_message=False
+        )
+        
         # Add handlers - Order matters! Specific handlers before general ones
         self.app.add_handler(setup_conv)
         self.app.add_handler(campaign_conv)
         self.app.add_handler(addvps_conv)
+        self.app.add_handler(key_conv)
         self.app.add_handler(CommandHandler('help', self.help_command))
         self.app.add_handler(CommandHandler('stats', self.stats_command))
         # Rename handler (checks for rename mode in user_data)
@@ -2088,6 +2320,144 @@ Need support? Contact @support
         # Start bot
         logger.info("🚀 AutoDialer Bot starting...")
         self.app.run_polling()
+    
+    async def key_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Generate license key (Admin only) - Interactive mode"""
+        user = update.effective_user
+        
+        # Check if user is admin
+        if user.id != 6996287179:
+            await update.message.reply_text("❌ Unauthorized. Admin only.")
+            return ConversationHandler.END
+        
+        await update.message.reply_text(
+            "🎫 **License Key Generator**\n\n"
+            "How many **days** should this license be valid?\n\n"
+            "💡 _Examples: 7, 30, 365, 730_",
+            parse_mode='Markdown'
+        )
+        return KEY_DAYS
+    
+    async def key_days_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle days input"""
+        try:
+            days = int(update.message.text.strip())
+            if days < 1:
+                raise ValueError()
+            
+            context.user_data['license_days'] = days
+            
+            await update.message.reply_text(
+                f"✅ Valid for: **{days} days**\n\n"
+                "How many **calls per day** should be allowed?\n\n"
+                "💡 _Examples: 100, 1000, 10000, 50000_",
+                parse_mode='Markdown'
+            )
+            return KEY_CALLS
+        
+        except ValueError:
+            await update.message.reply_text(
+                "❌ Please enter a valid number of days (minimum 1):"
+            )
+            return KEY_DAYS
+    
+    async def key_calls_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle calls per day input"""
+        try:
+            calls = int(update.message.text.strip())
+            if calls < 1:
+                raise ValueError()
+            
+            context.user_data['license_calls'] = calls
+            
+            # Format display
+            if calls >= 1000:
+                calls_display = f"{calls // 1000}k"
+            else:
+                calls_display = str(calls)
+            
+            await update.message.reply_text(
+                f"✅ Max calls/day: **{calls_display}**\n\n"
+                "How many **campaigns** should be allowed?\n\n"
+                "💡 _Examples: 3, 10, 100, 999_",
+                parse_mode='Markdown'
+            )
+            return KEY_CAMPAIGNS
+        
+        except ValueError:
+            await update.message.reply_text(
+                "❌ Please enter a valid number of calls (minimum 1):"
+            )
+            return KEY_CALLS
+    
+    async def key_campaigns_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle campaigns input and generate license"""
+        try:
+            campaigns = int(update.message.text.strip())
+            if campaigns < 1:
+                raise ValueError()
+            
+            # Get stored values
+            days = context.user_data.get('license_days')
+            calls = context.user_data.get('license_calls')
+            
+            # Generate license
+            license_mgr = LicenseManager()
+            
+            # Determine plan type based on limits
+            if campaigns <= 5 and calls <= 500 and days <= 30:
+                plan_type = 3  # Trial
+            elif campaigns >= 5000 or calls >= 50000:
+                plan_type = 2  # Premium
+            else:
+                plan_type = 1  # Standard
+            
+            key = license_mgr.generate_license(
+                plan_type=plan_type,
+                max_campaigns=campaigns,
+                max_calls_per_day=calls,
+                expiry_days=days
+            )
+            
+            plan_names = {1: 'Standard', 2: 'Premium', 3: 'Trial'}
+            plan_name = plan_names[plan_type]
+            
+            # Format calls for display
+            if calls >= 1000:
+                calls_display = f"{calls // 1000}k"
+            else:
+                calls_display = str(calls)
+            
+            await update.message.reply_text(
+                f"🎫 **{plan_name} License Generated**\n\n"
+                f"`{key}`\n\n"
+                f"📊 **Limits:**\n"
+                f"• Max Campaigns: {campaigns}\n"
+                f"• Max Calls/Day: {calls_display}\n"
+                f"• Valid for: {days} days\n\n"
+                f"_Copy this key and send to customer_",
+                parse_mode='Markdown'
+            )
+            
+            # Clear user data
+            context.user_data.clear()
+            return ConversationHandler.END
+        
+        except ValueError:
+            await update.message.reply_text(
+                "❌ Please enter a valid number of campaigns (minimum 1):"
+            )
+            return KEY_CAMPAIGNS
+        except Exception as e:
+            await update.message.reply_text(f"❌ Error generating key: {e}")
+            context.user_data.clear()
+            return ConversationHandler.END
+    
+    async def cancel_key(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Cancel license generation"""
+        context.user_data.clear()
+        await update.message.reply_text("❌ License generation cancelled.")
+        return ConversationHandler.END
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Show help message"""

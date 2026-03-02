@@ -23,11 +23,11 @@ class UIBuilder:
         return InlineKeyboardMarkup(keyboard)
     
     @staticmethod
-    def campaign_list_menu(campaigns):
-        """Campaign list with action buttons"""
+    def campaign_list_menu(campaigns, page=0, total_pages=1):
+        """Campaign list with action buttons and pagination"""
         keyboard = []
-        
-        for campaign in campaigns[:10]:  # Show last 10
+
+        for campaign in campaigns:
             status_emoji = {
                 'pending': '⏸️',
                 'running': '▶️',
@@ -35,14 +35,24 @@ class UIBuilder:
                 'completed': '✅',
                 'stopped': '⏹️'
             }.get(campaign.status, '❔')
-            
+
             keyboard.append([
                 InlineKeyboardButton(
                     f"{status_emoji} {campaign.name}",
                     callback_data=f"campaign_{campaign.id}"
                 )
             ])
-        
+
+        # Pagination row
+        if total_pages > 1:
+            nav_row = []
+            if page > 0:
+                nav_row.append(InlineKeyboardButton("◀️ Prev", callback_data=f"campaigns_page_{page - 1}"))
+            nav_row.append(InlineKeyboardButton(f"📄 {page + 1}/{total_pages}", callback_data="noop"))
+            if page < total_pages - 1:
+                nav_row.append(InlineKeyboardButton("Next ▶️", callback_data=f"campaigns_page_{page + 1}"))
+            keyboard.append(nav_row)
+
         keyboard.append([InlineKeyboardButton("🔙 Back to Menu", callback_data="main_menu")])
         return InlineKeyboardMarkup(keyboard)
     
@@ -70,6 +80,10 @@ class UIBuilder:
             [
                 InlineKeyboardButton("📊 View Stats", callback_data=f"stats_{campaign.id}"),
                 InlineKeyboardButton("📋 View Logs", callback_data=f"logs_{campaign.id}")
+            ],
+            [
+                InlineKeyboardButton("📲 P1 Vics", callback_data=f"p1vics_{campaign.id}"),
+                InlineKeyboardButton("🔄 Redial", callback_data=f"redial_{campaign.id}")
             ],
             [
                 InlineKeyboardButton("🗑️ Delete", callback_data=f"delete_{campaign.id}"),

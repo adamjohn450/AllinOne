@@ -61,6 +61,7 @@ class SIPAccount(Base):
     provider_order_id = Column(String(255))
     
     is_active = Column(Boolean, default=True)
+    is_default = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -155,6 +156,22 @@ class PhoneNumber(Base):
     last_attempt = Column(DateTime)
     
     campaign = relationship('Campaign', back_populates='phone_numbers')
+
+class License(Base):
+    """License keys"""
+    __tablename__ = 'licenses'
+    
+    id = Column(Integer, primary_key=True)
+    key = Column(String(50), unique=True, nullable=False, index=True)
+    plan_type = Column(Integer, default=1)  # 1=standard, 2=premium, 3=trial
+    max_campaigns = Column(Integer, default=999)
+    max_calls_per_day = Column(Integer, default=10000)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime, nullable=False)
+    assigned_user_id = Column(BigInteger)  # Telegram user ID once assigned
+    assigned_at = Column(DateTime)
+    is_active = Column(Boolean, default=True)
+    notes = Column(Text)
 
 class CallLog(Base):
     """Call logs"""

@@ -18,10 +18,15 @@ class CampaignManager:
         self.db = db_session
         self.active_campaigns = {}  # campaign_id: CampaignRunner
         self.telegram_callback = None
+        self.main_loop = None
     
     def set_telegram_callback(self, callback: Callable):
         """Set callback for sending Telegram messages"""
         self.telegram_callback = callback
+
+    def set_main_loop(self, loop):
+        """Set the main asyncio event loop for thread-safe notifications"""
+        self.main_loop = loop
     
     async def start_campaign(self, campaign_id: int, vps_config: Dict) -> bool:
         """Start a campaign"""
@@ -50,7 +55,8 @@ class CampaignManager:
                 phone_numbers=phone_numbers,
                 vps_config=vps_config,
                 db_session=self.db,
-                telegram_callback=self.telegram_callback
+                telegram_callback=self.telegram_callback,
+                main_loop=self.main_loop
             )
             
             # Start runner in background
@@ -195,12 +201,13 @@ class CampaignManager:
 class CampaignRunner:
     """Run a campaign in background"""
     
-    def __init__(self, campaign, phone_numbers, vps_config, db_session, telegram_callback):
+    def __init__(self, campaign, phone_numbers, vps_config, db_session, telegram_callback, main_loop=None):
         self.campaign = campaign
         self.phone_numbers = phone_numbers
         self.vps_config = vps_config
         self.db = None  # Each thread will create its own session
         self.telegram_callback = telegram_callback
+        self.main_loop = main_loop
         
         self.running = True
         self.paused = False
@@ -598,32 +605,30 @@ class CampaignRunner:
                 # Send telegram notification (use telegram_id, not user_id!)
                 if self.telegram_callback and status in ['transferred', 'callback', 'pressed_1']:
                     try:
-                        import threading
+                        import threading, asyncio as _asyncio
+                        _cb = self.telegram_callback
+                        _loop = self.main_loop
+                        _tid = self.campaign.user.telegram_id
+                        _cname = self.campaign.name
+                        if status == 'pressed_1':
+                            _smsg = "PRESSED 1 (Callback Request)"
+                        elif status == 'transferred':
+                            _smsg = "TRANSFERRED"
+                        elif status == 'callback':
+                            _smsg = "CALLBACK REQUEST"
+                        else:
+                            _smsg = status.upper()
+                        _msg = f"📞 **Campaign Update**\n\nPhone: {phone_number}\nStatus: {_smsg}\nCampaign: {_cname}"
                         def send_notification():
                             try:
-                                import asyncio
-                                loop = asyncio.new_event_loop()
-                                asyncio.set_event_loop(loop)
-                                
-                                telegram_id = self.campaign.user.telegram_id
-                                
-                                # Create user-friendly status message
-                                if status == 'pressed_1':
-                                    status_msg = "PRESSED 1 (Callback Request)"
-                                elif status == 'transferred':
-                                    status_msg = "TRANSFERRED"
-                                elif status == 'callback':
-                                    status_msg = "CALLBACK REQUEST"
+                                if _loop and not _loop.is_closed():
+                                    fut = _asyncio.run_coroutine_threadsafe(_cb(_tid, _msg), _loop)
+                                    fut.result(timeout=15)
                                 else:
-                                    status_msg = status.upper()
-                                
-                                message = f"📞 **Campaign Update**\n\nPhone: {phone_number}\nStatus: {status_msg}\nCampaign: {self.campaign.name}"
-                                
-                                loop.run_until_complete(self.telegram_callback(telegram_id, message))
-                                loop.close()
-                                logger.info(f"✅ Sent {status} notification to {telegram_id}")
+                                    _asyncio.run(_cb(_tid, _msg))
+                                logger.info(f"✅ Sent {status} notification to {_tid}")
                             except Exception as e:
-                                logger.error(f"Failed to send notification: {e}")
+                                logger.error(f"❌ Failed to send {status} notification to {_tid}: {e}")
                         threading.Thread(target=send_notification, daemon=True).start()
                     except Exception as e:
                         logger.error(f"Error setting up notification: {e}")
