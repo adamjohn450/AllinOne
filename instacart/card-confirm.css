@@ -1,0 +1,170 @@
+/* Card confirmation page specific styles */
+
+.back-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background-color 0.15s ease;
+    color: #2E3333;
+}
+
+.back-button:hover {
+    background-color: #F7F7F7;
+}
+
+.back-button:active {
+    transform: scale(0.95);
+}
+
+.spacer {
+    width: 40px;
+}
+
+.subtitle {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #757575;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.subtitle #card-last-four {
+    color: #2E3333;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+.card-form {
+    margin-bottom: 32px;
+}
+
+.cvv-input-wrapper {
+    margin-bottom: 24px;
+}
+
+.input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2E3333;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.cvv-inputs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.cvv-digit {
+    width: 56px;
+    height: 64px;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid #DCDCDC;
+    border-radius: 4px;
+    outline: none;
+    transition: all 0.2s;
+    background-color: #FFFFFF;
+    color: #2E3333;
+    font-family: monospace;
+}
+
+.cvv-digit:focus {
+    border-color: #0AAD0A;
+    box-shadow: 0 0 0 1px #0AAD0A;
+}
+
+.cvv-digit.filled {
+    border-color: #0AAD0A;
+    background-color: #F0F9F0;
+}
+
+.cvv-digit.error {
+    border-color: #E52B2B;
+    background-color: #FFF5F5;
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.submit-button {
+    width: 100%;
+}
+
+.help-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background-color: #F7F7F7;
+    border-radius: 8px;
+    margin-top: 32px;
+}
+
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.help-text {
+    font-size: 13px;
+    color: #757575;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.error-message {
+    color: #E52B2B;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    .cvv-inputs {
+        gap: 10px;
+    }
+    
+    .cvv-digit {
+        width: 52px;
+        height: 60px;
+        font-size: 26px;
+    }
+    
+    .subtitle {
+        font-size: 13px;
+        margin-bottom: 28px;
+    }
+
+    .help-section {
+        padding: 20px;
+        margin-top: 24px;
+    }
+}

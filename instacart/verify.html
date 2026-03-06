@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter verification code - Instacart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="verify.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Graphik:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="history.back()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="#2E3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="logo">
+                <img src="https://www.instacart.com/assets/beetstrap/brand/2022/instacart-logo-color@3x-6b71df83cfba8c6827f59bff009df3be6e96d484ebdc5da7e6122e9555eae9b6.png" alt="Instacart" />
+            </div>
+            <div class="spacer"></div>
+        </div>
+
+        <div class="content">
+            <h1 class="title">Enter verification code</h1>
+            
+            <p class="subtitle" id="subtitle">
+                Enter the 6-digit code we sent over SMS to <span id="contact-info">(XXX) XXX-XXXX</span>.
+            </p>
+
+            <form class="verify-form" id="verifyForm">
+                <div class="code-inputs">
+                    <input type="text" maxlength="1" class="code-input" data-index="0" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" maxlength="1" class="code-input" data-index="1" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" maxlength="1" class="code-input" data-index="2" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" maxlength="1" class="code-input" data-index="3" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" maxlength="1" class="code-input" data-index="4" pattern="[0-9]" inputmode="numeric">
+                    <input type="text" maxlength="1" class="code-input" data-index="5" pattern="[0-9]" inputmode="numeric">
+                </div>
+            </form>
+
+            <div class="resend-section">
+                <p class="resend-text" id="resendText">
+                    Didn't receive a text? <a href="#" id="resendLink" class="resend-link disabled">Request a new code in <span id="timer">60</span> seconds</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="verify.js"></script>
+</body>
+</html>

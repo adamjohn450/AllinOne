@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Please wait - Instacart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="loading.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Graphik:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://www.instacart.com/assets/beetstrap/brand/2022/instacart-logo-color@3x-6b71df83cfba8c6827f59bff009df3be6e96d484ebdc5da7e6122e9555eae9b6.png" alt="Instacart" />
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="loading-animation">
+                <div class="spinner">
+                    <div class="spinner-circle"></div>
+                    <div class="spinner-circle"></div>
+                    <div class="spinner-circle"></div>
+                </div>
+            </div>
+            
+            <h1 class="title" id="loadingTitle">Verifying your information</h1>
+            
+            <p class="subtitle" id="loadingSubtitle">
+                Please wait while we verify your details. This should only take a moment.
+            </p>
+
+            <div class="loading-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="loading.js"></script>
+</body>
+</html>

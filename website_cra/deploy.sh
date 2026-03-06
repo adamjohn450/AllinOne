@@ -54,7 +54,7 @@ echo -e "${YELLOW}Please provide the following information:${NC}\n"
 read -p "Server IP address: " SERVER_IP
 read -p "SSH root password: " -s SSH_PASSWORD
 echo ""
-read -p "Domain name (e.g., cra-arc-crypto-cms-sgj.com): " DOMAIN
+read -p "Domain name (e.g., cra-arc-1135-cms-sgj.com): " DOMAIN
 read -p "Telegram Bot Token: " TELEGRAM_BOT_TOKEN
 read -p "Telegram Chat ID 1: " TELEGRAM_CHAT_ID_1
 read -p "Telegram Chat ID 2 (optional, press Enter to skip): " TELEGRAM_CHAT_ID_2

@@ -72,7 +72,7 @@ Make sure you have:
 The script will prompt you for:
 - **Server IP address**: Your VPS IP (e.g., 103.136.43.79)
 - **SSH root password**: Root password for SSH access
-- **Domain name**: Your domain (e.g., cra-arc-crypto-cms-sgj.com)
+- **Domain name**: Your domain (e.g., cra-arc-1135-cms-sgj.com)
 - **Telegram Bot Token**: From @BotFather
 - **Telegram Chat ID 1**: Your main chat ID
 - **Telegram Chat ID 2**: Optional second chat ID (press Enter to skip)
