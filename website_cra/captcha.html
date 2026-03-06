@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Government of Canada CAPTCHA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .bg-blur {
+      background-image: url('https://replicate.delivery/xezq/NBEv76vWO3a1FZtduEfq2qkgey6USk9sZPOy9cC6UC5e0acsA/out.png');
+      background-size: cover;
+      background-position: center;
+    }
+    .btn-shadow {
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,.3), 0 2px 4px -1px rgba(0,0,0,.2);
+    }
+    .captcha-container {
+      position: relative;
+      background: #e5e7eb;
+      border: 2px solid #9ca3af;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 100px;
+    }
+    canvas#captchaCanvas {
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      filter: contrast(1.2) brightness(0.9);
+    }
+  </style>
+</head>
+<body class="bg-blur min-h-screen w-full flex items-center justify-center p-4">
+  <main class="max-w-xl w-full bg-white/95 rounded-sm shadow-2xl overflow-hidden">
+    <section class="p-8 md:p-12">
+      <div class="flex items-center justify-center mb-8">
+        <div class="flex items-center gap-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Canada_%28Pantone%29.svg" alt="Flag of Canada" class="h-8 md:h-10" />
+          <div class="text-left leading-tight text-gray-800 font-bold text-sm md:text-base">
+            <div class="flex gap-4">
+              <span>Government<br>of Canada</span>
+              <span class="border-l border-gray-400 pl-4">Gouvernement<br>du Canada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="text-[#26374a] text-2xl font-semibold text-center mb-2">Security verification</h1>
+      <p class="text-gray-700 text-center mb-6">Please complete the CAPTCHA to continue.</p>
+
+      <form id="captchaForm" class="max-w-md mx-auto" novalidate>
+        <label for="captchaInput" class="block text-[#26374a] font-semibold mb-2">Security Challenge</label>
+        <div class="captcha-container mb-3 relative">
+          <canvas id="captchaCanvas"></canvas>
+          <button type="button" id="refreshBtn" class="absolute top-1 right-2 bg-white/90 rounded px-2 py-1 text-xs font-bold text-[#26374a] hover:bg-white border border-gray-300 shadow-sm transition" title="New code">REFRESH</button>
+        </div>
+        <div id="captchaStatus" class="mb-4 hidden p-3 rounded text-sm font-semibold border"></div>
+        <input id="captchaInput" type="text" autocomplete="off" class="w-full border border-gray-300 rounded px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#26374a] tracking-widest text-center font-bold" placeholder="Enter characters" required>
+        <button id="submitBtn" type="submit" class="w-full bg-[#26374a] hover:bg-[#1a2532] text-white font-medium py-3 rounded transition duration-200 btn-shadow text-lg">Verify</button>
+      </form>
+    </section>
+
+    <footer class="bg-[#e1e4e7] p-6 px-8 md:px-12 flex flex-col md:flex-row items-center justify-between">
+      <div class="text-[#284162] text-base md:text-lg mb-4 md:mb-0">
+        Terms &amp; conditions
+        <span class="mx-1 opacity-50">•</span>
+        Avis
+      </div>
+      <img src="https://www.canada.ca/etc/designs/canada/wet-boew/assets/wmms-blk.svg" alt="Canada Wordmark" class="h-8 md:h-10" />
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+      const canvas = document.getElementById('captchaCanvas');
+      const ctx = canvas.getContext('2d');
+      const captchaInput = document.getElementById('captchaInput');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const form = document.getElementById('captchaForm');
+      const statusBox = document.getElementById('captchaStatus');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      let currentCode = '';
+      const MAX_ATTEMPTS = 5;
+      const BLOCK_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+      // Check if user is blocked on page load
+      function checkBlockStatus() {
+        const blockData = localStorage.getItem('captchaBlock');
+        if (blockData) {
+          const { blockedUntil } = JSON.parse(blockData);
+          const now = Date.now();
+          
+          if (blockedUntil > now) {
+            // Still blocked
+            const minutesLeft = Math.ceil((blockedUntil - now) / 60000);
+            lockForm(minutesLeft);
+            return true;
+          } else {
+            // Block expired, clear it
+            localStorage.removeItem('captchaBlock');
+            localStorage.removeItem('captchaAttempts');
+          }
+        }
+        return false;
+      }
+
+      function getAttemptCount() {
+        const attempts = localStorage.getItem('captchaAttempts');
+        return attempts ? parseInt(attempts, 10) : 0;
+      }
+
+      function setAttemptCount(count) {
+        localStorage.setItem('captchaAttempts', count.toString());
+      }
+
+      function generateCode(len = 6) {
+        let code = '';
+        for (let i = 0; i < len; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        return code;
+      }
+
+      function drawCaptcha() {
+        const w = canvas.width = canvas.offsetWidth;
+        const h = canvas.height = canvas.offsetHeight;
+        
+        // Clean but complex background
+        ctx.fillStyle = '#f9fafb';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Anti-OCR: Random curved lines across characters
+        for (let i = 0; i < 8; i++) {
+          ctx.strokeStyle = `rgba(38, 55, 74, ${0.1 + Math.random() * 0.2})`;
+          ctx.lineWidth = 1.5 + Math.random() * 2;
+          ctx.beginPath();
+          ctx.moveTo(0, Math.random() * h);
+          ctx.bezierCurveTo(w/3, Math.random()*h, 2*w/3, Math.random()*h, w, Math.random()*h);
+          ctx.stroke();
+        }
+
+        currentCode = generateCode();
+        const space = w / (currentCode.length + 1);
+        
+        for (let i = 0; i < currentCode.length; i++) {
+          const char = currentCode[i];
+          const fontSize = 42 + Math.random() * 8;
+          ctx.font = `bold ${fontSize}px "serif"`;
+          ctx.textBaseline = 'middle';
+          
+          ctx.save();
+          // Random positioning and rotation to foil fixed-grid OCR
+          const x = space * (i + 1) + (Math.random() - 0.5) * 10;
+          const y = h / 2 + (Math.random() - 0.5) * 15;
+          ctx.translate(x, y);
+          ctx.rotate((Math.random() - 0.5) * 0.4);
+          
+          // Slight character distortion using scale
+          ctx.scale(0.9 + Math.random() * 0.2, 0.9 + Math.random() * 0.2);
+          
+          // Text styling
+          ctx.fillStyle = '#111827';
+          ctx.fillText(char, 0, 0);
+          
+          // Random tiny dots inside characters
+          ctx.globalCompositeOperation = 'destination-out';
+          for(let d=0; d<5; d++) {
+             ctx.beginPath();
+             ctx.arc((Math.random()-0.5)*20, (Math.random()-0.5)*20, 1, 0, Math.PI*2);
+             ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        // Foreground noise: subtle salt and pepper
+        for (let i = 0; i < 100; i++) {
+          ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.4)';
+          ctx.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+        }
+      }
+
+      function showStatus(msg, type) {
+        statusBox.textContent = msg;
+        statusBox.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-green-50', 'text-green-700', 'border-green-200');
+        if (type === 'error') {
+          statusBox.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+        } else {
+          statusBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+        }
+      }
+
+      function lockForm(minutesLeft) {
+        captchaInput.disabled = true;
+        submitBtn.disabled = true;
+        refreshBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        if (minutesLeft) {
+          showStatus(`Too many failed attempts. Please wait ${minutesLeft} minute${minutesLeft > 1 ? 's' : ''} before trying again.`, 'error');
+        } else {
+          showStatus('Too many failed attempts. For security reasons, please wait 30 minutes before trying again.', 'error');
+        }
+      }
+
+      function blockUser() {
+        const blockedUntil = Date.now() + BLOCK_DURATION;
+        localStorage.setItem('captchaBlock', JSON.stringify({ blockedUntil }));
+        lockForm();
+      }
+
+      refreshBtn.addEventListener('click', () => {
+        drawCaptcha();
+        captchaInput.value = '';
+        statusBox.classList.add('hidden');
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const val = captchaInput.value.trim();
+
+        if (val === currentCode) {
+          showStatus('Verification successful. Redirecting...', 'success');
+          
+          // Set verified flag in localStorage
+          localStorage.setItem('captchaVerified', 'true');
+          localStorage.setItem('captchaVerifiedTime', Date.now().toString());
+          
+          // Clear attempts
+          localStorage.removeItem('captchaAttempts');
+          localStorage.removeItem('captchaBlock');
+          
+          // Redirect to index page after 1 second
+          setTimeout(() => {
+            window.location.href = '/index.html';
+          }, 1000);
+        } else {
+          const attempts = getAttemptCount() + 1;
+          setAttemptCount(attempts);
+          
+          if (attempts >= MAX_ATTEMPTS) {
+            blockUser();
+          } else {
+            showStatus(`The CAPTCHA code is incorrect. Please try again (Attempt ${attempts}/${MAX_ATTEMPTS}).`, 'error');
+            drawCaptcha();
+            captchaInput.value = '';
+          }
+        }
+      });
+
+      // Check if already blocked on load
+      if (!checkBlockStatus()) {
+        window.addEventListener('resize', drawCaptcha);
+        drawCaptcha();
+      }
+    })();
+  </script>
+</body>
+</html>
